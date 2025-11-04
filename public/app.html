@@ -3,31 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Style Heaven POS - Dashboard</title>
+  <title>Dashboard - Style Heaven POS</title>
   <style>
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background-color: #fafafa;
-      text-align: center;
+      background-color: #f5f7fb;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
     header {
       background-color: #111;
       color: white;
       padding: 14px;
-      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
       font-size: 18px;
+      margin: 0;
+    }
+    button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #b02a37;
     }
     main {
-      padding: 20px;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      flex-direction: column;
+    }
+    h2 {
+      font-size: 20px;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
-  <header>Style Heaven POS</header>
+  <header>
+    <h1>Style Heaven POS</h1>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
   <main>
     <h2>Welcome, Rony!</h2>
     <p>This is your main POS dashboard.</p>
   </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
