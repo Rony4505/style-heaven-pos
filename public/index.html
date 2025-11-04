@@ -87,21 +87,30 @@
     <button id="loginBtn">Login</button>
   </div>
 
+  <!-- 🔽 Script নিচে রাখা হয়েছে যাতে ঠিকভাবে লোড হয় -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const loginBtn = document.getElementById("loginBtn");
-      const showPass = document.getElementById("showPass");
-      const usernameInput = document.getElementById("username");
-      const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const showPass = document.getElementById("showPass");
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
 
-      // Show/Hide password
-      showPass.addEventListener("change", function () {
-        passwordInput.type = this.checked ? "text" : "password";
-      });
+    // Show/Hide password
+    showPass.addEventListener("change", function () {
+      passwordInput.type = this.checked ? "text" : "password";
+    });
 
-      // Login click
-      loginBtn.addEventListener("click", function () {
-        const user = usernameInput.value.trim();
-        const pass = passwordInput.value.trim();
+    // Login click
+    loginBtn.addEventListener("click", function () {
+      const user = usernameInput.value.trim();
+      const pass = passwordInput.value.trim();
 
-        if (user === "admin" && pass ===
+      if (user === "admin" && pass === "1234") {
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "app.html";
+      } else {
+        alert("❌ ভুল username বা password!");
+      }
+    });
+  </script>
+</body>
+</html>
