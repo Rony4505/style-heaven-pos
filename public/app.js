@@ -3,7 +3,6 @@ const loginBox = document.getElementById("loginBox");
 const mainApp = document.getElementById("mainApp");
 const loginBtn = document.getElementById("loginBtn");
 const loginError = document.getElementById("loginError");
-
 const username = document.getElementById("username");
 const password = document.getElementById("password");
 
@@ -12,7 +11,7 @@ loginBtn.onclick = () => {
     loginBox.classList.add("hidden");
     mainApp.classList.remove("hidden");
   } else {
-    loginError.textContent = "❌ ভুল ইউজারনেম বা পাসওয়ার্ড";
+    loginError.textContent = "❌ ভুল ইউজারনেম বা পাসওয়ার্ড!";
   }
 };
 
@@ -20,77 +19,69 @@ loginBtn.onclick = () => {
 const products = [
   { id: 1, name: "T-Shirt", price: 450 },
   { id: 2, name: "Panjabi", price: 1200 },
-  { id: 3, name: "Jeans", price: 950 },
-  { id: 4, name: "Saree", price: 2200 },
-  { id: 5, name: "Polo Shirt", price: 650 },
-  { id: 6, name: "Jacket", price: 1800 },
+  { id: 3, name: "Jeans", price: 980 },
+  { id: 4, name: "Polo Shirt", price: 650 },
+  { id: 5, name: "Jacket", price: 1800 },
+  { id: 6, name: "Saree", price: 2200 },
+  { id: 7, name: "Salwar Kameez", price: 1650 },
 ];
 
-const grid = document.getElementById("productGrid");
-const cartList = document.getElementById("cartList");
-const totalTk = document.getElementById("totalTk");
-const searchInput = document.getElementById("searchInput");
-const checkoutBtn = document.getElementById("checkoutBtn");
+// Product rendering
+const productList = document.getElementById("productList");
+const billItems = document.getElementById("billItems");
+const totalDisplay = document.getElementById("total");
+const searchInput = document.getElementById("search");
+const logoutBtn = document.getElementById("logout");
 
 let cart = [];
 
-// Display products
-function displayProducts(items) {
-  grid.innerHTML = "";
-  items.forEach((p) => {
+function renderProducts(list) {
+  productList.innerHTML = "";
+  list.forEach((p) => {
     const div = document.createElement("div");
-    div.textContent = `${p.name}\n৳${p.price}`;
-    div.onclick = () => addToCart(p);
-    grid.appendChild(div);
-  });
-}
-displayProducts(products);
-
-// Add to cart
-function addToCart(p) {
-  cart.push(p);
-  renderCart();
-}
-
-function renderCart() {
-  cartList.innerHTML = "";
-  let total = 0;
-  cart.forEach((p, i) => {
-    total += p.price;
-    const item = document.createElement("div");
-    item.style.display = "flex";
-    item.style.justifyContent = "space-between";
-    item.innerHTML = `
-      <span>${p.name}</span>
-      <span>৳${p.price}</span>
-      <button class="btn small" onclick="removeItem(${i})">x</button>
+    div.classList.add("product");
+    div.innerHTML = `
+      <h4>${p.name}</h4>
+      <p>৳${p.price}</p>
+      <button onclick="addToCart(${p.id})">🛒 Add</button>
     `;
-    cartList.appendChild(item);
+    productList.appendChild(div);
   });
-  totalTk.textContent = total;
 }
 
-function removeItem(i) {
-  cart.splice(i, 1);
-  renderCart();
+function addToCart(id) {
+  const product = products.find((p) => p.id === id);
+  cart.push(product);
+  updateBill();
 }
 
-// Search
-searchInput.oninput = () => {
-  const val = searchInput.value.toLowerCase();
+function updateBill() {
+  billItems.innerHTML = "";
+  let total = 0;
+  cart.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} - ৳${item.price}`;
+    billItems.appendChild(li);
+    total += item.price;
+  });
+  totalDisplay.textContent = `Total: ৳${total}`;
+}
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
   const filtered = products.filter((p) =>
-    p.name.toLowerCase().includes(val)
+    p.name.toLowerCase().includes(query)
   );
-  displayProducts(filtered);
+  renderProducts(filtered);
+});
+
+logoutBtn.onclick = () => {
+  mainApp.classList.add("hidden");
+  loginBox.classList.remove("hidden");
+  username.value = "";
+  password.value = "";
+  cart = [];
+  updateBill();
 };
 
-// Checkout
-checkoutBtn.onclick = () => {
-  if (cart.length === 0) {
-    alert("🛒 কোনো আইটেম নাই কার্টে!");
-    return;
-  }
-  alert("✅ বিক্রি সম্পন্ন!");
-  cart = [];
-  renderCart();
-};
+renderProducts(products);
