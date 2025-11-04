@@ -8,10 +8,10 @@
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background-color: #f5f5f5;
+      background-color: #f5f7fb;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
     }
     header {
       background-color: #111;
@@ -20,23 +20,6 @@
       text-align: center;
       font-weight: 600;
       font-size: 18px;
-      position: relative;
-    }
-    #logout {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      background-color: crimson;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      padding: 6px 14px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.2s;
-    }
-    #logout:hover {
-      background-color: darkred;
     }
     main {
       flex: 1;
@@ -45,35 +28,68 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+      padding: 20px;
     }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
+    .login-box {
+      background: white;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 280px;
+    }
+    h2 {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      width: 100%;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <header>
-    Style Heaven POS
-    <button id="logout">Logout</button>
-  </header>
+  <header>Style Heaven</header>
+
   <main>
-    <h1>Welcome, Rony!</h1>
-    <p>This is your main POS dashboard.</p>
+    <div class="login-box">
+      <h2>Login to Style Heaven POS</h2>
+      <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <div class="checkbox">
+          <input type="checkbox" id="showPass">
+          <label for="showPass">Show Password</label>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+    </div>
   </main>
 
-  <script>
-    // check login status
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "/index.html";
-    }
-
-    // logout
-    document.getElementById("logout").addEventListener("click", () => {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "/index.html";
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
-
