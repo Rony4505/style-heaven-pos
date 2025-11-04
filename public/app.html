@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Heaven POS - Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #f8f8f8;
+    }
+    header {
+      background-color: #111;
+      color: white;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    main {
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>Style Heaven POS</header>
+  <main>
+    <div class="card">
+      <h2>Welcome, Rony 👋</h2>
+      <p>This is your main POS dashboard.</p>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </main>
+
+  <script>
+    function logout() {
+      window.location.href = "/"; // Go back to login screen
+    }
+  </script>
+</body>
+</html>
