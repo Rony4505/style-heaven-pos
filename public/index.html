@@ -57,4 +57,16 @@
 <body>
   <header>Style Heaven</header>
   <main>
-    <h1>Welcome to Style Heaven
+    <h1>Welcome to Style Heaven POS</h1>
+    <p>Please log in to continue</p>
+    <button id="login">Login</button>
+  </main>
+
+  <script>
+    document.getElementById("login").addEventListener("click", () => {
+      // Redirect to main app screen
+      window.location.href = "/app.html";
+    });
+  </script>
+</body>
+</html>
