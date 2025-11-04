@@ -34,6 +34,7 @@
       padding: 30px;
       width: 320px;
       text-align: center;
+      margin-top: 60px;
     }
     .login-box h2 {
       margin-bottom: 20px;
@@ -84,3 +85,23 @@
       <label for="showPass">Show Password</label>
     </div>
     <button id="loginBtn">Login</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const loginBtn = document.getElementById("loginBtn");
+      const showPass = document.getElementById("showPass");
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
+
+      // Show/Hide password
+      showPass.addEventListener("change", function () {
+        passwordInput.type = this.checked ? "text" : "password";
+      });
+
+      // Login click
+      loginBtn.addEventListener("click", function () {
+        const user = usernameInput.value.trim();
+        const pass = passwordInput.value.trim();
+
+        if (user === "admin" && pass ===
