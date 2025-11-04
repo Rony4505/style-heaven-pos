@@ -3,66 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - Style Heaven POS</title>
+  <title>Style Heaven POS</title>
   <style>
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: "Poppins", sans-serif;
-      background-color: #f5f7fb;
+    }
+
+    body {
+      background-color: #f7f7f7;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      height: 100vh;
     }
+
     header {
       background-color: #111;
       color: white;
       padding: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
+      text-align: center;
+      font-weight: 600;
       font-size: 18px;
-      margin: 0;
     }
-    button {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      transition: 0.3s;
-    }
-    button:hover {
-      background-color: #b02a37;
-    }
+
     main {
       flex: 1;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
     }
+
     h2 {
       font-size: 20px;
       margin-bottom: 8px;
     }
+
+    .btn {
+      width: 80%;
+      max-width: 300px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    #logout {
+      background-color: #dc3545;
+    }
+
+    #logout:hover {
+      background-color: #b02a37;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #666;
+      font-size: 13px;
+      background: #eee;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Style Heaven POS</h1>
-    <button id="logoutBtn">Logout</button>
-  </header>
+  <header>Style Heaven POS</header>
 
   <main>
-    <h2>Welcome, Rony!</h2>
-    <p>This is your main POS dashboard.</p>
+    <h2>Welcome, Rony 👋</h2>
+    <button class="btn" id="newSale">🛒 New Sale</button>
+    <button class="btn" id="products">📦 Products</button>
+    <button class="btn" id="salesHistory">💰 Sales History</button>
+    <button class="btn" id="settings">⚙️ Settings</button>
+    <button class="btn" id="logout">🚪 Log Out</button>
   </main>
 
-  <script src="script.js"></script>
+  <footer>© 2025 Style Heaven</footer>
+
+  <script>
+    // Navigation buttons (later you can link real pages)
+    document.getElementById("newSale").addEventListener("click", () => {
+      alert("🛒 New Sale page coming soon!");
+    });
+
+    document.getElementById("products").addEventListener("click", () => {
+      alert("📦 Products page coming soon!");
+    });
+
+    document.getElementById("salesHistory").addEventListener("click", () => {
+      alert("💰 Sales History page coming soon!");
+    });
+
+    document.getElementById("settings").addEventListener("click", () => {
+      alert("⚙️ Settings page coming soon!");
+    });
+
+    // Log out button
+    document.getElementById("logout").addEventListener("click", () => {
+      if (confirm("Are you sure you want to log out?")) {
+        window.location.href = "/"; // back to login page
+      }
+    });
+  </script>
 </body>
 </html>
