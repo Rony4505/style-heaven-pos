@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Sale - Style Heaven POS</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 14px;
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      width: 90%;
+      max-width: 350px;
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 90%;
+      max-width: 350px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .total {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #f1f1f1;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>🛍️ New Sale</header>
+
+  <main>
+    <h2>New Sale</h2>
+    <div class="form-group">
+      <label for="product">Select Product:</label>
+      <select id="product">
+        <option value="Shirt" data-price="750">Shirt - ৳750</option>
+        <option value="Pants" data-price="950">Pants - ৳950</option>
+        <option value="T-shirt" data-price="450">T-shirt - ৳450</option>
+        <option value="Panjabi" data-price="1200">Panjabi - ৳1200</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="quantity">Quantity:</label>
+      <input type="number" id="quantity" min="1" value="1" />
+    </div>
+
+    <div class="total">Total: ৳<span id="total">750</span></div>
+
+    <button id="confirmSale">✅ Confirm Sale</button>
+    <button onclick="window.location.href='index.html'" style="background:#dc3545;">⬅️ Back to Home</button>
+  </main>
+
+  <footer>© 2025 Style Heaven</footer>
+
+  <script>
+    const product = document.getElementById('product');
+    const quantity = document.getElementById('quantity');
+    const total = document.getElementById('total');
+    const confirmSale = document.getElementById('confirmSale');
+
+    function calculateTotal() {
+      const price = parseFloat(product.selectedOptions[0].getAttribute('data-price'));
+      const qty = parseInt(quantity.value) || 1;
+      total.textContent = price * qty;
+    }
+
+    product.addEventListener('change', calculateTotal);
+    quantity.addEventListener('input', calculateTotal);
+
+    confirmSale.addEventListener('click', () => {
+      const name = product.value;
+      const price = parseFloat(product.selectedOptions[0].getAttribute('data-price'));
+      const qty = parseInt(quantity.value);
+      const totalPrice = price * qty;
+      
+      // Save sale info to localStorage
+      const sales = JSON.parse(localStorage.getItem('sales')) || [];
+      sales.push({ name, price, qty, totalPrice, date: new Date().toLocaleString() });
+      localStorage.setItem('sales', JSON.stringify(sales));
+
+      alert(`✅ Sale recorded: ${name} x${qty} = ৳${totalPrice}`);
+      window.location.href = "index.html";
+    });
+
+    calculateTotal();
+  </script>
+</body>
+</html>
