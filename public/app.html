@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Style Heaven POS</title>
+  <title>Style Heaven POS - Dashboard</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
     body {
-      background-color: #f7f7f7;
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #fafafa;
       height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     header {
@@ -26,96 +23,74 @@
       text-align: center;
       font-weight: 600;
       font-size: 18px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
 
     main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      margin-top: 100px;
       text-align: center;
-      gap: 15px;
-      padding: 20px;
     }
 
-    h2 {
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-
-    .btn {
-      width: 80%;
-      max-width: 300px;
+    button {
+      display: block;
+      width: 200px;
+      margin: 10px auto;
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 10px;
-      padding: 14px;
+      border-radius: 8px;
+      padding: 10px 20px;
       font-size: 16px;
-      font-weight: 500;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background-color 0.3s ease;
     }
 
-    .btn:hover {
+    button:hover {
       background-color: #0056b3;
     }
 
     #logout {
-      background-color: #dc3545;
+      background-color: #ff3b30;
     }
 
     #logout:hover {
-      background-color: #b02a37;
-    }
-
-    footer {
-      text-align: center;
-      padding: 10px;
-      color: #666;
-      font-size: 13px;
-      background: #eee;
+      background-color: #d32f2f;
     }
   </style>
 </head>
 <body>
   <header>Style Heaven POS</header>
-
   <main>
-    <h2>Welcome, Rony 👋</h2>
-    <button class="btn" id="newSale">🛒 New Sale</button>
-    <button class="btn" id="products">📦 Products</button>
-    <button class="btn" id="salesHistory">💰 Sales History</button>
-    <button class="btn" id="settings">⚙️ Settings</button>
-    <button class="btn" id="logout">🚪 Log Out</button>
+    <h2>🛍️ Welcome, Rony!</h2>
+    <button id="newSaleBtn">🛒 New Sale</button>
+    <button id="productsBtn">📦 Products</button>
+    <button id="historyBtn">💰 Sales History</button>
+    <button id="settingsBtn">⚙️ Settings</button>
+    <button id="logout">🚪 Log Out</button>
   </main>
 
-  <footer>© 2025 Style Heaven</footer>
-
   <script>
-    // Navigation buttons (later you can link real pages)
-    document.getElementById("newSale").addEventListener("click", () => {
-      alert("🛒 New Sale page coming soon!");
+    document.getElementById("newSaleBtn").addEventListener("click", () => {
+      window.location.href = "sale.html";
     });
 
-    document.getElementById("products").addEventListener("click", () => {
-      alert("📦 Products page coming soon!");
+    document.getElementById("productsBtn").addEventListener("click", () => {
+      alert("Products page coming soon!");
     });
 
-    document.getElementById("salesHistory").addEventListener("click", () => {
-      alert("💰 Sales History page coming soon!");
+    document.getElementById("historyBtn").addEventListener("click", () => {
+      alert("Sales history page coming soon!");
     });
 
-    document.getElementById("settings").addEventListener("click", () => {
-      alert("⚙️ Settings page coming soon!");
+    document.getElementById("settingsBtn").addEventListener("click", () => {
+      alert("Settings page coming soon!");
     });
 
-    // Log out button
     document.getElementById("logout").addEventListener("click", () => {
-      if (confirm("Are you sure you want to log out?")) {
-        window.location.href = "/"; // back to login page
-      }
+      window.location.href = "/";
     });
   </script>
 </body>
