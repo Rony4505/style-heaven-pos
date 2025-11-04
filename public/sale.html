@@ -3,71 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Style Heaven POS - Dashboard</title>
+  <title>New Sale - Style Heaven POS</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    body {
-      text-align: center;
-      background: #f9f9f9;
-    }
     main {
-      margin-top: 80px;
+      text-align: center;
+      margin-top: 50px;
     }
-    .menu-btn {
-      display: block;
-      width: 200px;
-      margin: 10px auto;
-      padding: 12px;
-      background: #007bff;
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #111;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
     }
-    .menu-btn:hover {
-      background: #0056b3;
-    }
-    .logout-btn {
-      background: #dc3545;
-    }
-    .logout-btn:hover {
-      background: #a71d2a;
+    #total {
+      font-weight: bold;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
   <header>
-    Style Heaven POS
+    Style Heaven POS - New Sale
+    <button onclick="window.location.href='app.html'" style="float:right; background:red; border:none; color:white; padding:6px 10px; border-radius:6px;">Back</button>
   </header>
 
   <main>
-    <h2>Welcome, Rony 👋</h2>
-    <button class="menu-btn" onclick="goTo('sale.html')">🛍️ New Sale</button>
-    <button class="menu-btn" onclick="goTo('products.html')">📦 Products</button>
-    <button class="menu-btn" onclick="goTo('history.html')">💰 Sales History</button>
-    <button class="menu-btn" onclick="goTo('settings.html')">⚙️ Settings</button>
-    <button class="menu-btn logout-btn" onclick="logout()">🚪 Log Out</button>
+    <h2>🛍️ Create a New Sale</h2>
+    <div>
+      <input type="text" id="productName" placeholder="Product Name">
+      <input type="number" id="price" placeholder="Price (৳)">
+      <input type="number" id="quantity" placeholder="Qty" value="1" min="1">
+      <button onclick="addItem()">Add</button>
+    </div>
+
+    <table id="saleTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price (৳)</th>
+          <th>Subtotal (৳)</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <p id="total">Total: ৳0</p>
+    <button onclick="confirmSale()">✅ Confirm Sale</button>
   </main>
 
-  <footer>
-    <p>© 2025 Style Heaven</p>
-  </footer>
-
   <script>
-    function goTo(page) {
-      window.location.href = page;
+    let items = [];
+    function addItem() {
+      const name = document.getElementById('productName').value.trim();
+      const price = parseFloat(document.getElementById('price').value);
+      const qty = parseInt(document.getElementById('quantity').value);
+      if (!name || price <= 0 || qty <= 0) return alert("Please enter valid info!");
+      items.push({ name, price, qty });
+      renderTable();
+      document.getElementById('productName').value = '';
+      document.getElementById('price').value = '';
+      document.getElementById('quantity').value = 1;
     }
 
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      window.location.href = "index.html";
+    function renderTable() {
+      const tbody = document.querySelector('#saleTable tbody');
+      tbody.innerHTML = '';
+      let total = 0;
+      items.forEach((item, i) => {
+        const sub = item.price * item.qty;
+        total += sub;
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>${item.price}</td>
+            <td>${sub}</td>
+            <td><button onclick="removeItem(${i})">❌</button></td>
+          </tr>
+        `;
+      });
+      document.getElementById('total').innerText = "Total: ৳" + total;
     }
 
-    // যদি login না করা থাকে তাহলে redirect করো
-    if (!localStorage.getItem("loggedIn")) {
-      window.location.href = "index.html";
+    function removeItem(index) {
+      items.splice(index, 1);
+      renderTable();
+    }
+
+    function confirmSale() {
+      if (items.length === 0) return alert("No items added!");
+      alert("✅ Sale confirmed! Total: ৳" + items.reduce((a, b) => a + b.price * b.qty, 0));
+      items = [];
+      renderTable();
     }
   </script>
 </body>
