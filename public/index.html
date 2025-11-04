@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Style Heaven POS - Login</title>
+  <title>Style Heaven POS</title>
   <style>
     body {
       margin: 0;
@@ -20,6 +20,23 @@
       text-align: center;
       font-weight: 600;
       font-size: 18px;
+      position: relative;
+    }
+    #logout {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      background-color: crimson;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    #logout:hover {
+      background-color: darkred;
     }
     main {
       flex: 1;
@@ -28,84 +45,35 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 20px;
     }
     h1 {
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-    input {
-      width: 250px;
-      padding: 10px;
-      margin: 6px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-    label {
-      font-size: 14px;
-      color: #333;
-      margin-top: 5px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 30px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-top: 10px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 8px;
+      font-size: 24px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <header>Style Heaven</header>
+  <header>
+    Style Heaven POS
+    <button id="logout">Logout</button>
+  </header>
   <main>
-    <h1>Login to Style Heaven POS</h1>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <label>
-      <input type="checkbox" id="showPass" />
-      Show Password
-    </label>
-    <button id="login">Login</button>
-    <p class="error" id="error"></p>
+    <h1>Welcome, Rony!</h1>
+    <p>This is your main POS dashboard.</p>
   </main>
 
   <script>
-    const passwordInput = document.getElementById("password");
-    const showPass = document.getElementById("showPass");
-    const loginBtn = document.getElementById("login");
-    const errorMsg = document.getElementById("error");
+    // check login status
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "/index.html";
+    }
 
-    showPass.addEventListener("change", () => {
-      passwordInput.type = showPass.checked ? "text" : "password";
-    });
-
-    loginBtn.addEventListener("click", () => {
-      const user = document.getElementById("username").value.trim();
-      const pass = passwordInput.value.trim();
-
-      if (user === "admin" && pass === "1234") {
-        localStorage.setItem("loggedIn", "true");
-        window.location.href = "/app.html";
-      } else {
-        errorMsg.textContent = "Invalid username or password";
-      }
+    // logout
+    document.getElementById("logout").addEventListener("click", () => {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "/index.html";
     });
   </script>
 </body>
 </html>
+
