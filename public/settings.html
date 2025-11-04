@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings - Style Heaven POS</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background: #f5f7fa;
+      text-align: center;
+    }
+    header {
+      background: #111;
+      color: white;
+      padding: 14px;
+      font-weight: 600;
+    }
+    main {
+      margin-top: 50px;
+    }
+    input {
+      padding: 10px;
+      margin: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 80%;
+      max-width: 300px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header>Style Heaven POS - Settings</header>
+
+  <main>
+    <h2>⚙️ Settings</h2>
+    <input type="text" placeholder="Shop Name" value="Style Heaven" />
+    <input type="text" placeholder="Currency Symbol" value="৳" />
+    <br />
+    <button onclick="alert('✅ Settings Saved!')">Save</button>
+    <br />
+    <button style="background:red" onclick="window.location.href='app.html'">⬅️ Back</button>
+  </main>
+</body>
+</html>
