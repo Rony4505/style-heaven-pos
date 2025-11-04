@@ -42,6 +42,14 @@
       border-radius: 8px;
       font-size: 14px;
     }
+    label {
+      font-size: 14px;
+      color: #333;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
     button {
       background-color: #007bff;
       color: white;
@@ -69,21 +77,33 @@
     <h1>Login to Style Heaven POS</h1>
     <input type="text" id="username" placeholder="Username" />
     <input type="password" id="password" placeholder="Password" />
+    <label>
+      <input type="checkbox" id="showPass" />
+      Show Password
+    </label>
     <button id="login">Login</button>
     <p class="error" id="error"></p>
   </main>
 
   <script>
-    document.getElementById("login").addEventListener("click", () => {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
-      const error = document.getElementById("error");
+    const passwordInput = document.getElementById("password");
+    const showPass = document.getElementById("showPass");
+    const loginBtn = document.getElementById("login");
+    const errorMsg = document.getElementById("error");
 
-      // demo credentials (change later if needed)
+    showPass.addEventListener("change", () => {
+      passwordInput.type = showPass.checked ? "text" : "password";
+    });
+
+    loginBtn.addEventListener("click", () => {
+      const user = document.getElementById("username").value.trim();
+      const pass = passwordInput.value.trim();
+
       if (user === "admin" && pass === "1234") {
+        localStorage.setItem("loggedIn", "true");
         window.location.href = "/app.html";
       } else {
-        error.textContent = "Invalid username or password";
+        errorMsg.textContent = "Invalid username or password";
       }
     });
   </script>
