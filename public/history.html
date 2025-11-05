@@ -1,67 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sale History - Style Heaven POS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sale History</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
+      background: #f8f8f8;
       margin: 0;
-      background: #f9f9f9;
     }
     header {
       background: #111;
       color: white;
-      padding: 14px;
       text-align: center;
+      padding: 14px;
       font-weight: 600;
     }
     table {
-      width: 90%;
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
+      margin-top: 10px;
     }
-    table, th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
       text-align: center;
     }
     th {
-      background: #111;
+      background: #007bff;
       color: white;
     }
     button {
-      margin: 10px;
-      padding: 8px 16px;
-      background: red;
+      background: #ff3b30;
       color: white;
       border: none;
+      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
+      margin: 10px;
     }
   </style>
 </head>
 <body>
-  <header>Style Heaven POS - Sale History</header>
-
-  <main>
-    <table>
+  <header>📜 Sale History</header>
+  <main style="padding:10px;">
+    <table id="historyTable">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Product</th>
-          <th>Qty</th>
+          <th>Invoice No</th>
+          <th>Date & Time</th>
+          <th>Product Details</th>
           <th>Total (৳)</th>
+          <th>Paid By</th>
+          <th>Pay (৳)</th>
+          <th>Due (৳)</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td>03/11/2025</td><td>T-shirt</td><td>2</td><td>800</td></tr>
-        <tr><td>04/11/2025</td><td>Jeans</td><td>1</td><td>1200</td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
-
-    <button onclick="window.location.href='app.html'">⬅️ Back</button>
+    <button onclick="clearHistory()">🗑️ Clear All</button>
   </main>
+
+  <script>
+    const historyTable = document.querySelector("#historyTable tbody");
+    const history = JSON.parse(localStorage.getItem("salesHistory")) || [];
+
+    function renderHistory() {
+      historyTable.innerHTML = "";
+      if (history.length === 0) {
+        historyTable.innerHTML = "<tr><td colspan='7'>No sales found</td></tr>";
+        return;
+      }
+      history.forEach((sale) => {
+        const products = sale.items.map(i => `${i.name} (${i.qty}x৳${i.price})`).join(", ");
+        const row = `
+          <tr>
+            <td>${sale.invoice}</td>
+            <td>${sale.date}</td>
+            <td>${products}</td>
+            <td>${sale.total}</td>
+            <td>${sale.paidBy}</td>
+            <td>${sale.payAmount}</td>
+            <td>${sale.due}</td>
+          </tr>`;
+        historyTable.innerHTML += row;
+      });
+    }
+
+    function clearHistory() {
+      if (confirm("Clear all sale history?")) {
+        localStorage.removeItem("salesHistory");
+        renderHistory();
+      }
+    }
+
+    renderHistory();
+  </script>
 </body>
 </html>
