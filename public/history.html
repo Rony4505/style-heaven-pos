@@ -3,120 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sale History - Style Heaven POS</title>
+  <title>Sale History | Style Heaven POS</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
       margin: 0;
-      background: #f5f5f5;
+      background-color: #f4f6f8;
+      padding: 10px;
     }
+
     header {
       background: #111;
       color: white;
       text-align: center;
-      padding: 15px;
-      font-size: 20px;
+      padding: 12px;
+      font-size: 18px;
       font-weight: 600;
-      position: relative;
+      border-radius: 8px;
     }
-    button {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-    table {
-      width: 96%;
-      margin: 20px auto;
-      border-collapse: collapse;
+
+    .container {
       background: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-top: 15px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
       font-size: 14px;
     }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
     th {
-      background: #222;
+      background: #007bff;
       color: white;
     }
-    tr:hover {
-      background: #f1f1f1;
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .btn-area {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    .back {
+      background: #6c757d;
+    }
+
+    .clear {
+      background: #dc3545;
+    }
+
+    .print {
+      background: #28a745;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <header>
-    Style Heaven POS - Sale History
-    <button onclick="window.location.href='app.html'">Back</button>
-  </header>
+  <header>📜 Sale History - Style Heaven</header>
 
-  <main>
+  <div class="container">
+    <h2>All Sales Record</h2>
+
     <table id="historyTable">
       <thead>
         <tr>
           <th>Date</th>
-          <th>Invoice No</th>
-          <th>Customer Name</th>
-          <th>Product Code</th>
-          <th>Product Name</th>
+          <th>Invoice</th>
+          <th>Customer</th>
+          <th>Product</th>
           <th>Qty</th>
-          <th>Total Buying Price (৳)</th>
-          <th>Total Selling Price (৳)</th>
-          <th>Total (৳)</th>
-          <th>Change (৳)</th>
+          <th>Buying Price</th>
+          <th>Selling Price</th>
+          <th>Total</th>
+          <th>Paid</th>
+          <th>Change</th>
+          <th>Payment</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
-  </main>
+
+    <div class="btn-area">
+      <button class="btn print" onclick="window.print()">🖨️ Print</button>
+      <button class="btn clear" id="clearHistory">🗑️ Clear All</button>
+      <button class="btn back" onclick="window.location.href='app.html'">⬅️ Back</button>
+    </div>
+  </div>
 
   <script>
-    // Load from localStorage
-    const sales = JSON.parse(localStorage.getItem("sales") || "[]");
-    const products = JSON.parse(localStorage.getItem("products") || "[]");
-    const tbody = document.querySelector("#historyTable tbody");
+    const tableBody = document.querySelector("#historyTable tbody");
+    const clearBtn = document.getElementById("clearHistory");
 
-    if (sales.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="10">No sale records found</td></tr>`;
-    } else {
+    // Load sales from localStorage
+    function loadSales() {
+      const sales = JSON.parse(localStorage.getItem("sales") || "[]");
+      tableBody.innerHTML = "";
+
+      if (sales.length === 0) {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td colspan="11" style="text-align:center; color:gray;">No sales found.</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+
       sales.forEach(sale => {
-        sale.items.forEach(item => {
-          // Find product info
-          const product = products.find(p => p.code === item.code);
-          const buyingPrice = product ? parseFloat(product.buyingPrice) || 0 : 0;
-          const qty = parseFloat(item.qty) || 0;
-          
-          // ✅ এখন সঠিক হিসাব:
-          const totalBuying = qty * buyingPrice;
-          const totalSelling = qty * (parseFloat(item.price) || 0);
-
-          // Row create
-          const row = `
-            <tr>
-              <td>${sale.date}</td>
-              <td>${sale.invoice}</td>
-              <td>${sale.customer || "-"}</td>
-              <td>${item.code}</td>
-              <td>${item.name}</td>
-              <td>${qty}</td>
-              <td>${totalBuying.toFixed(2)}</td>
-              <td>${totalSelling.toFixed(2)}</td>
-              <td>${sale.total}</td>
-              <td>${sale.change}</td>
-            </tr>
-          `;
-          tbody.innerHTML += row;
-        });
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${sale.date}</td>
+          <td>${sale.invoice}</td>
+          <td>${sale.customer}</td>
+          <td>${sale.name}</td>
+          <td>${sale.qty}</td>
+          <td>${sale.buyingPrice} টাকা</td>
+          <td>${sale.sellingPrice} টাকা</td>
+          <td>${sale.total} টাকা</td>
+          <td>${sale.paid} টাকা</td>
+          <td>${sale.change} টাকা</td>
+          <td>${sale.payment}</td>
+        `;
+        tableBody.appendChild(row);
       });
     }
+
+    // Clear history
+    clearBtn.addEventListener("click", () => {
+      if (confirm("⚠️ Are you sure you want to delete all sales history?")) {
+        localStorage.removeItem("sales");
+        loadSales();
+      }
+    });
+
+    loadSales();
   </script>
 </body>
 </html>
