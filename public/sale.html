@@ -164,7 +164,7 @@
       }
     });
 
-    // Add product to sale
+    // Add to sale table (stock not reduced yet)
     document.getElementById("addBtn").addEventListener("click", () => {
       const code = codeInput.value.trim();
       const qty = parseInt(qtyInput.value);
@@ -177,15 +177,12 @@
       if (qty > found.qty) return alert("❌ Not enough stock!");
 
       const subtotal = price * qty;
-      saleItems.push({ date, name: found.name, qty, price, subtotal });
-      found.qty -= qty;
-
-      localStorage.setItem("products", JSON.stringify(products));
+      saleItems.push({ date, code, name: found.name, qty, price, subtotal, buying: found.buying });
       renderTable();
-      priceInput.value = "";
-      qtyInput.value = 1;
       codeInput.value = "";
       nameInput.value = "";
+      priceInput.value = "";
+      qtyInput.value = 1;
       buyStock.textContent = "";
     });
 
@@ -209,7 +206,6 @@
       totalEl.textContent = total;
     }
 
-    // Remove product
     window.removeItem = (i) => {
       saleItems.splice(i, 1);
       renderTable();
@@ -222,27 +218,37 @@
       changeEl.textContent = paid - total;
     });
 
-    // Confirm Sale
+    // Confirm Sale (now stock will reduce)
     confirmSaleBtn.addEventListener("click", () => {
       if (saleItems.length === 0) return alert("No items added!");
-      const invoice = "INV-" + Date.now();
-      const total = totalEl.textContent;
-      const paid = paidInput.value;
+      const total = parseFloat(totalEl.textContent);
+      const paid = parseFloat(paidInput.value) || 0;
+      const change = paid - total;
       const method = document.getElementById("paymentMethod").value;
-      const change = changeEl.textContent;
 
-      const sale = {
+      // Invoice auto increase
+      let lastInvoice = parseInt(localStorage.getItem("lastInvoice") || "1000");
+      const invoice = ++lastInvoice;
+      localStorage.setItem("lastInvoice", invoice);
+
+      // Reduce stock
+      saleItems.forEach(sale => {
+        const prod = products.find(p => p.code === sale.code);
+        if (prod) prod.qty -= sale.qty;
+      });
+      localStorage.setItem("products", JSON.stringify(products));
+
+      // Save sale history
+      const history = JSON.parse(localStorage.getItem("sales") || "[]");
+      history.push({
         invoice,
         date: new Date().toLocaleString(),
         items: saleItems,
         total,
         paid,
-        method,
         change,
-      };
-
-      const history = JSON.parse(localStorage.getItem("sales") || "[]");
-      history.push(sale);
+        method
+      });
       localStorage.setItem("sales", JSON.stringify(history));
 
       alert(`✅ Sale Saved!\nInvoice: ${invoice}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
