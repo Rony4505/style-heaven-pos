@@ -3,157 +3,173 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Add Product - Style Heaven POS</title>
+  <title>Add Product | Style Heaven POS</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #f5f7fa;
+      background: #f7f9fb;
       margin: 0;
       padding: 0;
+      text-align: center;
     }
     header {
       background: #111;
       color: white;
-      text-align: center;
-      padding: 14px;
-      font-size: 18px;
+      padding: 12px;
       font-weight: 600;
     }
-    main {
-      text-align: center;
+    .container {
+      margin: 20px auto;
+      width: 95%;
+      max-width: 700px;
+      background: white;
       padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     input, button {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 6px;
+      padding: 8px;
       border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 14px;
     }
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
     table {
-      width: 95%;
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
+      margin-top: 15px;
     }
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
-      text-align: center;
     }
     th {
-      background: #111;
+      background: #007bff;
       color: white;
     }
     .back-btn {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
+      background: red;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
-    .back-btn:hover {
-      background: #b02a37;
+    .total-buying {
+      font-weight: 600;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <header>
-    Add Product
-    <button class="back-btn" onclick="window.location.href='app.html'" style="float:right; margin-right:10px;">⬅️ Back</button>
-  </header>
+  <header>Style Heaven POS - Add Product</header>
+  <button class="back-btn" onclick="window.location.href='app.html'">🔙 Back</button>
 
-  <main>
-    <h2>📦 Add New Product</h2>
+  <div class="container">
+    <h2>➕ Add New Product</h2>
 
-    <div>
-      <input type="date" id="stockDate">
-      <input type="text" id="productName" placeholder="Product Name">
-      <input type="text" id="productCode" placeholder="Product Code">
-      <input type="number" id="productQty" placeholder="Product Qty" min="1">
-      <input type="number" id="buyPrice" placeholder="Buying Price (৳)">
-      <input type="number" id="sellPrice" placeholder="Selling Price (৳)">
-      <button onclick="addProduct()">Add</button>
+    <div class="form-row">
+      <input type="text" id="code" placeholder="Product Code" />
+      <input type="text" id="name" placeholder="Product Name" />
+      <input type="number" id="buying" placeholder="Buying Price (৳)" />
+      <input type="number" id="qty" placeholder="Qty" min="1" value="1" />
+      <span id="totalBuying" class="total-buying">Total: ৳0</span>
+      <button id="addBtn">Add</button>
     </div>
 
-    <table id="productTable">
+    <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Product Name</th>
           <th>Code</th>
+          <th>Product</th>
+          <th>Buying (৳)</th>
           <th>Qty</th>
-          <th>Buying Price</th>
-          <th>Selling Price</th>
+          <th>Total Buying (৳)</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="productTable"></tbody>
     </table>
-  </main>
+  </div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem("productStock")) || [];
+    const codeInput = document.getElementById("code");
+    const nameInput = document.getElementById("name");
+    const buyingInput = document.getElementById("buying");
+    const qtyInput = document.getElementById("qty");
+    const totalBuying = document.getElementById("totalBuying");
+    const tableBody = document.getElementById("productTable");
 
-    document.getElementById("stockDate").valueAsDate = new Date();
-    renderTable();
+    let products = JSON.parse(localStorage.getItem("products") || "[]");
 
-    function addProduct() {
-      const date = document.getElementById("stockDate").value;
-      const name = document.getElementById("productName").value.trim();
-      const code = document.getElementById("productCode").value.trim();
-      const qty = parseInt(document.getElementById("productQty").value);
-      const buyPrice = parseFloat(document.getElementById("buyPrice").value);
-      const sellPrice = parseFloat(document.getElementById("sellPrice").value);
-
-      if (!date || !name || !code || isNaN(qty) || isNaN(buyPrice) || isNaN(sellPrice)) {
-        return alert("⚠️ Please fill all fields correctly!");
-      }
-
-      const existing = products.find(p => p.code === code);
-      if (existing) {
-        existing.qty += qty;
-        existing.buyPrice = buyPrice;
-        existing.sellPrice = sellPrice;
-      } else {
-        products.push({ date, name, code, qty, buyPrice, sellPrice });
-      }
-
-      localStorage.setItem("productStock", JSON.stringify(products));
-      renderTable();
-
-      document.getElementById("productName").value = "";
-      document.getElementById("productCode").value = "";
-      document.getElementById("productQty").value = "";
-      document.getElementById("buyPrice").value = "";
-      document.getElementById("sellPrice").value = "";
+    // Auto calculate total buying
+    function updateTotal() {
+      const b = parseFloat(buyingInput.value) || 0;
+      const q = parseInt(qtyInput.value) || 0;
+      totalBuying.textContent = "Total: ৳" + (b * q);
     }
 
+    buyingInput.addEventListener("input", updateTotal);
+    qtyInput.addEventListener("input", updateTotal);
+
+    // Add Product
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const code = codeInput.value.trim();
+      const name = nameInput.value.trim();
+      const buying = parseFloat(buyingInput.value);
+      const qty = parseInt(qtyInput.value);
+
+      if (!code || !name || !buying || !qty) return alert("⚠️ Please fill all fields!");
+      if (products.some(p => p.code === code)) return alert("⚠️ This product code already exists!");
+
+      products.push({ code, name, buying, qty });
+      localStorage.setItem("products", JSON.stringify(products));
+
+      renderTable();
+      codeInput.value = "";
+      nameInput.value = "";
+      buyingInput.value = "";
+      qtyInput.value = 1;
+      updateTotal();
+    });
+
     function renderTable() {
-      const tbody = document.querySelector("#productTable tbody");
-      tbody.innerHTML = "";
+      tableBody.innerHTML = "";
       products.forEach((p, i) => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${p.date}</td>
-            <td>${p.name}</td>
-            <td>${p.code}</td>
-            <td>${p.qty}</td>
-            <td>৳${p.buyPrice}</td>
-            <td>৳${p.sellPrice}</td>
-            <td><button onclick="deleteProduct(${i})">❌</button></td>
-          </tr>
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.code}</td>
+          <td>${p.name}</td>
+          <td>${p.buying}</td>
+          <td>${p.qty}</td>
+          <td>${p.buying * p.qty}</td>
+          <td><button onclick="deleteProduct(${i})">❌</button></td>
         `;
+        tableBody.appendChild(tr);
       });
     }
 
-    function deleteProduct(i) {
-      if (confirm("🗑️ Delete this product?")) {
+    window.deleteProduct = (i) => {
+      if (confirm("Delete this product?")) {
         products.splice(i, 1);
-        localStorage.setItem("productStock", JSON.stringify(products));
+        localStorage.setItem("products", JSON.stringify(products));
         renderTable();
       }
-    }
+    };
+
+    renderTable();
   </script>
 </body>
 </html>
