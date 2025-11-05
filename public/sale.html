@@ -7,22 +7,32 @@
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      margin: 0;
       background: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
     header {
       background: #111;
       color: white;
       text-align: center;
       padding: 15px;
-      font-size: 20px;
       font-weight: 600;
-      position: sticky;
-      top: 0;
+      font-size: 18px;
+      position: relative;
+    }
+    header button {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
     }
     main {
-      padding: 20px;
-      text-align: center;
+      padding: 15px;
     }
     input, select, button {
       padding: 8px;
@@ -32,158 +42,164 @@
     }
     button {
       cursor: pointer;
-      background: #007bff;
-      color: white;
-      border: none;
-    }
-    button:hover {
-      background: #0056b3;
     }
     table {
-      width: 95%;
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
+      margin-top: 15px;
       background: white;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 10px;
+      padding: 8px;
       text-align: center;
+      font-size: 14px;
     }
     th {
-      background: #222;
+      background: #111;
       color: white;
     }
-    .total {
-      font-size: 20px;
+    .total-section {
+      text-align: right;
       font-weight: bold;
-      margin-top: 15px;
-    }
-    .small-info {
-      font-size: 12px;
-      color: gray;
-    }
-    .pay-buttons button {
-      background: #28a745;
-      margin: 3px;
-    }
-    .pay-buttons button.active {
-      background: #111;
-    }
-    .confirm-btn {
-      background: #ff3b30;
       font-size: 18px;
-      padding: 12px 25px;
+      margin-top: 10px;
+    }
+    .pay-section {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .pay-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 3px;
+      cursor: pointer;
+    }
+    .pay-btn:hover {
+      background: #0056b3;
+    }
+    #confirm {
+      background: green;
+      color: white;
+      border: none;
       border-radius: 8px;
-      margin-top: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
   <header>
     Style Heaven POS - New Sale
-    <button onclick="window.location.href='app.html'" style="float:right; background:red; border:none; color:white; padding:6px 10px; border-radius:6px; margin-right:10px;">Back</button>
+    <button onclick="window.location.href='app.html'">Back</button>
   </header>
 
   <main>
-    <div>
-      <b>Date:</b> <span id="date"></span> &nbsp; | &nbsp;
-      <b>Invoice No:</b> <span id="invoice"></span>
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+      <div>Date: <span id="date"></span></div>
+      <div>Invoice No: <span id="invoice"></span></div>
     </div>
 
-    <br>
-
-    <input type="text" id="productCode" placeholder="Product Code" oninput="fillProduct()">
-    <input type="text" id="productName" placeholder="Product Name" readonly>
-    <input type="number" id="price" placeholder="Selling Price (৳)">
-    <input type="number" id="quantity" placeholder="Qty" min="1" value="1">
-    <button onclick="addItem()">Add</button>
-
-    <div class="small-info">
-      <span id="buyingInfo"></span> | <span id="stockInfo"></span>
+    <div style="margin-top:10px;">
+      <input type="text" id="customerName" placeholder="Customer Name">
+      <input type="text" id="productCode" placeholder="Product Code">
+      <input type="text" id="productName" placeholder="Product Name" readonly>
+      <input type="number" id="price" placeholder="Selling Price (৳)">
+      <input type="number" id="quantity" placeholder="Qty" min="1" value="1">
+      <button onclick="addItem()">Add</button>
     </div>
+
+    <small id="extraInfo" style="color:gray; display:block; margin-top:5px;"></small>
 
     <table id="saleTable">
       <thead>
         <tr>
+          <th>Code</th>
           <th>Product</th>
           <th>Qty</th>
           <th>Price (৳)</th>
-          <th>Total (৳)</th>
+          <th>Subtotal (৳)</th>
+          <th>Buying (৳)</th>
+          <th>Stock</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
-    <div class="total" id="total">Total: ৳0</div>
+    <div class="total-section" id="total">Total: ৳0</div>
 
-    <div class="pay-buttons">
-      <button onclick="selectPayment('Cash')">💵 Cash</button>
-      <button onclick="selectPayment('Bkash')">📱 Bkash</button>
-      <button onclick="selectPayment('Nagad')">📲 Nagad</button>
-      <button onclick="selectPayment('Rocket')">🚀 Rocket</button>
-      <button onclick="selectPayment('Bank')">🏦 Bank</button>
+    <div class="pay-section">
+      <h3>Select Payment Method</h3>
+      <button class="pay-btn" onclick="setPayment('Cash')">Cash</button>
+      <button class="pay-btn" onclick="setPayment('Bkash')">Bkash</button>
+      <button class="pay-btn" onclick="setPayment('Nagad')">Nagad</button>
+      <button class="pay-btn" onclick="setPayment('Rocket')">Rocket</button>
+      <button class="pay-btn" onclick="setPayment('Bank')">Bank</button>
+      <p>Selected: <strong id="paymentMethod">None</strong></p>
+
+      <input type="number" id="paid" placeholder="Paid (৳)">
+      <p>Change: <span id="change">৳0</span></p>
+      <button id="confirm">✅ Confirm Sale</button>
     </div>
-
-    <div>
-      <input type="number" id="paid" placeholder="Paid (৳)" oninput="calcChange()">
-      <input type="text" id="change" placeholder="Change (৳)" readonly>
-    </div>
-
-    <button class="confirm-btn" onclick="confirmSale()">✅ Confirm Sale</button>
   </main>
 
   <script>
+    const dateEl = document.getElementById("date");
+    const invoiceEl = document.getElementById("invoice");
+    const productCode = document.getElementById("productCode");
+    const productName = document.getElementById("productName");
+    const extraInfo = document.getElementById("extraInfo");
+
+    // Auto date & invoice
+    const today = new Date();
+    dateEl.textContent = today.toLocaleDateString();
+    const invoiceNo = localStorage.getItem("lastInvoice") ? parseInt(localStorage.getItem("lastInvoice")) + 1 : 1001;
+    invoiceEl.textContent = invoiceNo;
+
     let items = [];
-    let paymentMethod = "";
-    let products = JSON.parse(localStorage.getItem("products") || "[]");
+    let selectedPayment = null;
 
-    // Date & Invoice setup
-    document.getElementById("date").innerText = new Date().toLocaleDateString();
-    let invoiceNo = parseInt(localStorage.getItem("lastInvoice") || "1000") + 1;
-    document.getElementById("invoice").innerText = invoiceNo;
-
-    function fillProduct() {
-      const code = document.getElementById("productCode").value.trim();
-      const product = products.find(p => p.code === code);
-      if (product) {
-        document.getElementById("productName").value = product.name;
-        document.getElementById("buyingInfo").innerText = "Buying Price: ৳" + product.buying;
-        document.getElementById("stockInfo").innerText = "Stock Available: " + product.qty;
+    // Load product info on code input
+    productCode.addEventListener("change", () => {
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+      const p = products.find(pr => pr.code === productCode.value.trim());
+      if (p) {
+        productName.value = p.name;
+        extraInfo.textContent = `Buying: ৳${p.buyingPrice}, Stock: ${p.stock}`;
       } else {
-        document.getElementById("productName").value = "";
-        document.getElementById("buyingInfo").innerText = "";
-        document.getElementById("stockInfo").innerText = "❌ Stock not available";
+        productName.value = "";
+        extraInfo.textContent = "⚠️ Stock not available!";
       }
-    }
+    });
 
     function addItem() {
-      const name = document.getElementById("productName").value.trim();
-      const code = document.getElementById("productCode").value.trim();
+      const code = productCode.value.trim();
+      const name = productName.value.trim();
       const price = parseFloat(document.getElementById("price").value);
       const qty = parseInt(document.getElementById("quantity").value);
+
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
       const product = products.find(p => p.code === code);
 
-      if (!product || !name || price <= 0 || qty <= 0) {
-        alert("⚠️ Invalid product info!");
-        return;
-      }
+      if (!code || !name || !price || !qty) return alert("Please fill all fields!");
+      if (!product) return alert("Product not found in stock!");
+      if (qty > product.stock) return alert("Not enough stock available!");
 
-      if (qty > product.qty) {
-        alert("❌ Not enough stock!");
-        return;
-      }
-
-      items.push({ code, name, price, qty, buying: product.buying });
+      items.push({ code, name, price, qty, buying: product.buyingPrice, stock: product.stock });
       renderTable();
-      document.getElementById("productCode").value = "";
-      document.getElementById("productName").value = "";
+
+      productCode.value = "";
+      productName.value = "";
       document.getElementById("price").value = "";
       document.getElementById("quantity").value = 1;
-      document.getElementById("buyingInfo").innerText = "";
-      document.getElementById("stockInfo").innerText = "";
+      extraInfo.textContent = "";
     }
 
     function renderTable() {
@@ -195,70 +211,75 @@
         total += sub;
         tbody.innerHTML += `
           <tr>
+            <td>${item.code}</td>
             <td>${item.name}</td>
             <td>${item.qty}</td>
             <td>${item.price}</td>
             <td>${sub}</td>
+            <td style="color:gray;">${item.buying}</td>
+            <td style="color:gray;">${item.stock}</td>
             <td><button onclick="removeItem(${i})">❌</button></td>
-          </tr>`;
+          </tr>
+        `;
       });
-      document.getElementById("total").innerText = "Total: ৳" + total;
+      document.getElementById("total").innerText = "Total: ৳" + total.toFixed(2);
     }
 
-    function removeItem(index) {
-      items.splice(index, 1);
+    function removeItem(i) {
+      items.splice(i, 1);
       renderTable();
     }
 
-    function selectPayment(method) {
-      paymentMethod = method;
-      document.querySelectorAll(".pay-buttons button").forEach(btn => btn.classList.remove("active"));
-      event.target.classList.add("active");
+    function setPayment(method) {
+      selectedPayment = method;
+      document.getElementById("paymentMethod").textContent = method;
     }
 
-    function calcChange() {
+    document.getElementById("paid").addEventListener("input", function() {
+      const paid = parseFloat(this.value) || 0;
+      const total = items.reduce((a, b) => a + b.price * b.qty, 0);
+      const change = paid - total;
+      document.getElementById("change").textContent = "৳" + change.toFixed(2);
+    });
+
+    document.getElementById("confirm").addEventListener("click", () => {
+      if (items.length === 0) return alert("No items added!");
+      if (!selectedPayment) return alert("Please select a payment method!");
+
       const total = items.reduce((a, b) => a + b.price * b.qty, 0);
       const paid = parseFloat(document.getElementById("paid").value) || 0;
-      document.getElementById("change").value = paid - total;
-    }
-
-    function confirmSale() {
-      if (items.length === 0) return alert("⚠️ No items added!");
-      if (!paymentMethod) return alert("⚠️ Select payment method first!");
-
-      const total = items.reduce((a, b) => a + b.price * b.qty, 0);
-      const paid = parseFloat(document.getElementById("paid").value);
       const change = paid - total;
-      const date = new Date().toLocaleString();
+      const customer = document.getElementById("customerName").value || "N/A";
 
-      let saleData = JSON.parse(localStorage.getItem("sales") || "[]");
-      saleData.push({
+      // Save to sales history
+      const sales = JSON.parse(localStorage.getItem("sales") || "[]");
+      sales.push({
+        date: today.toLocaleDateString(),
         invoice: invoiceNo,
-        date,
+        customer,
         items,
-        total,
-        paid,
-        change,
-        paymentMethod
+        total: total.toFixed(2),
+        change: change.toFixed(2),
       });
-      localStorage.setItem("sales", JSON.stringify(saleData));
-      localStorage.setItem("lastInvoice", invoiceNo);
+      localStorage.setItem("sales", JSON.stringify(sales));
 
-      // Update stock only after confirm
-      items.forEach(it => {
-        const p = products.find(p => p.code === it.code);
-        if (p) p.qty -= it.qty;
+      // Update stock (after confirm)
+      const products = JSON.parse(localStorage.getItem("products") || "[]");
+      items.forEach(sold => {
+        const product = products.find(p => p.code === sold.code);
+        if (product) product.stock -= sold.qty;
       });
       localStorage.setItem("products", JSON.stringify(products));
 
-      alert("✅ Sale confirmed! Invoice #" + invoiceNo);
+      // Save invoice number
+      localStorage.setItem("lastInvoice", invoiceNo);
+
+      alert("✅ Sale confirmed successfully!");
       items = [];
       renderTable();
       document.getElementById("paid").value = "";
-      document.getElementById("change").value = "";
-      invoiceNo++;
-      document.getElementById("invoice").innerText = invoiceNo;
-    }
+      document.getElementById("change").textContent = "৳0";
+    });
   </script>
 </body>
 </html>
