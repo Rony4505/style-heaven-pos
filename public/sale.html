@@ -3,218 +3,254 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Sale - Style Heaven POS</title>
+  <title>New Sale | Style Heaven POS</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #f5f7fa;
+      background: #f5f7fa;
       margin: 0;
       padding: 0;
+      text-align: center;
     }
     header {
       background: #111;
       color: white;
-      text-align: center;
-      padding: 14px;
-      font-size: 18px;
+      padding: 12px;
       font-weight: 600;
     }
-    main {
-      text-align: center;
+    .container {
+      margin: 20px auto;
+      width: 95%;
+      max-width: 800px;
+      background: white;
       padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
     }
     input, select, button {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 6px;
+      padding: 8px;
       border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 14px;
     }
-    .back-btn {
-      background: #dc3545;
+    button {
+      background: #007bff;
       color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
       cursor: pointer;
     }
-    .back-btn:hover {
-      background: #b02a37;
+    button:hover {
+      background: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .total-box {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .payment-section {
+      margin-top: 15px;
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .back-btn {
+      background: red;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
     .small-text {
       font-size: 12px;
-      color: gray;
+      color: #555;
     }
   </style>
 </head>
 <body>
-  <header>
-    🛒 New Sale
-    <button class="back-btn" onclick="window.location.href='app.html'" style="float:right;margin-right:10px;">⬅️ Back</button>
-  </header>
+  <header>Style Heaven POS - New Sale</header>
+  <button class="back-btn" onclick="window.location.href='app.html'">🔙 Back</button>
 
-  <main>
-    <h2>🧾 Create New Sale</h2>
-
-    <div>
-      <input type="text" id="productCode" placeholder="Product Code" />
+  <div class="container">
+    <h2>🧾 Create a New Sale</h2>
+    <div class="form-row">
+      <input type="date" id="date" />
+      <input type="text" id="code" placeholder="Product Code" />
       <input type="text" id="productName" placeholder="Product Name" readonly />
-      <input type="number" id="stockQty" placeholder="Stock Qty" readonly />
-      <input type="number" id="buyPrice" placeholder="Buying Price" readonly />
-      <input type="number" id="sellPrice" placeholder="Selling Price" />
-      <input type="number" id="saleQty" placeholder="Sale Qty" min="1" />
-      <button onclick="addToSale()">Add</button>
+      <input type="number" id="price" placeholder="Selling Price (৳)" />
+      <input type="number" id="qty" placeholder="Qty" value="1" min="1" />
+      <span id="buyStock" class="small-text"></span>
+      <button id="addBtn">Add</button>
     </div>
 
-    <p id="stockStatus" class="small-text"></p>
-
-    <table id="saleTable" style="width:95%;margin:auto;border-collapse:collapse;">
+    <table>
       <thead>
-        <tr style="background:#111;color:white;">
+        <tr>
+          <th>Date</th>
           <th>Product</th>
-          <th>Code</th>
           <th>Qty</th>
-          <th>Price</th>
-          <th>Total</th>
+          <th>Price (৳)</th>
+          <th>Subtotal (৳)</th>
           <th>Action</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="saleTable"></tbody>
     </table>
 
-    <h3>Total: <span id="totalAmount">৳0</span></h3>
+    <div class="total-box">Total: ৳<span id="total">0</span></div>
 
-    <div>
+    <div class="payment-section">
       <label>Payment Method:</label>
       <select id="paymentMethod">
         <option value="Cash">Cash</option>
-        <option value="Bkash">Bkash</option>
+        <option value="bKash">bKash</option>
         <option value="Nagad">Nagad</option>
+        <option value="Card">Card</option>
       </select>
-      <input type="number" id="paidAmount" placeholder="Paid Amount" />
+      <br><br>
+      <label>Paid (৳):</label>
+      <input type="number" id="paid" placeholder="Enter Paid Amount" />
+      <p>Change: ৳<span id="change">0</span></p>
     </div>
 
-    <h3>Change: <span id="changeAmount">৳0</span></h3>
-
-    <button onclick="confirmSale()">✅ Confirm Sale</button>
-  </main>
+    <button id="confirmSale">✅ Confirm Sale</button>
+  </div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem("productStock")) || [];
+    const dateInput = document.getElementById("date");
+    const codeInput = document.getElementById("code");
+    const nameInput = document.getElementById("productName");
+    const priceInput = document.getElementById("price");
+    const qtyInput = document.getElementById("qty");
+    const buyStock = document.getElementById("buyStock");
+    const tableBody = document.getElementById("saleTable");
+    const totalEl = document.getElementById("total");
+    const paidInput = document.getElementById("paid");
+    const changeEl = document.getElementById("change");
+    const confirmSaleBtn = document.getElementById("confirmSale");
+
+    let products = JSON.parse(localStorage.getItem("products") || "[]");
     let saleItems = [];
 
-    document.getElementById("productCode").addEventListener("input", function () {
-      const code = this.value.trim();
-      const product = products.find(p => p.code === code);
+    // Auto set today's date
+    dateInput.valueAsDate = new Date();
 
-      const nameField = document.getElementById("productName");
-      const stockField = document.getElementById("stockQty");
-      const buyField = document.getElementById("buyPrice");
-      const sellField = document.getElementById("sellPrice");
-      const status = document.getElementById("stockStatus");
-
-      if (product) {
-        nameField.value = product.name;
-        stockField.value = product.qty;
-        buyField.value = product.buyPrice;
-        sellField.value = product.sellPrice;
-        status.textContent = "";
+    // Auto-fill product info by code
+    codeInput.addEventListener("change", () => {
+      const code = codeInput.value.trim();
+      const found = products.find(p => p.code === code);
+      if (found) {
+        nameInput.value = found.name;
+        buyStock.textContent = `Buying: ৳${found.buying} | Stock: ${found.qty}`;
       } else {
-        nameField.value = "";
-        stockField.value = "";
-        buyField.value = "";
-        sellField.value = "";
-        status.textContent = "⚠️ Stock not available!";
+        nameInput.value = "";
+        buyStock.textContent = "❌ Stock not available";
       }
     });
 
-    function addToSale() {
-      const code = document.getElementById("productCode").value.trim();
-      const product = products.find(p => p.code === code);
-      if (!product) return alert("❌ Product not found!");
+    // Add product to sale
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const code = codeInput.value.trim();
+      const qty = parseInt(qtyInput.value);
+      const price = parseFloat(priceInput.value);
+      const date = dateInput.value;
+      const found = products.find(p => p.code === code);
 
-      const qty = parseInt(document.getElementById("saleQty").value);
-      const price = parseFloat(document.getElementById("sellPrice").value);
-      if (!qty || !price) return alert("⚠️ Please enter valid quantity and price!");
+      if (!found) return alert("❌ Product not available!");
+      if (!price || price <= 0) return alert("❌ Please enter selling price!");
+      if (qty > found.qty) return alert("❌ Not enough stock!");
 
-      if (qty > product.qty) return alert("⚠️ Not enough stock!");
+      const subtotal = price * qty;
+      saleItems.push({ date, name: found.name, qty, price, subtotal });
+      found.qty -= qty;
 
-      const total = qty * price;
-      saleItems.push({ name: product.name, code, qty, price, total });
+      localStorage.setItem("products", JSON.stringify(products));
       renderTable();
-      calculateTotal();
-    }
-
-    function renderTable() {
-      const tbody = document.querySelector("#saleTable tbody");
-      tbody.innerHTML = "";
-      saleItems.forEach((item, i) => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${item.name}</td>
-            <td>${item.code}</td>
-            <td>${item.qty}</td>
-            <td>৳${item.price}</td>
-            <td>৳${item.total}</td>
-            <td><button onclick="removeItem(${i})">❌</button></td>
-          </tr>`;
-      });
-    }
-
-    function removeItem(i) {
-      saleItems.splice(i, 1);
-      renderTable();
-      calculateTotal();
-    }
-
-    function calculateTotal() {
-      const total = saleItems.reduce((sum, i) => sum + i.total, 0);
-      document.getElementById("totalAmount").textContent = "৳" + total;
-    }
-
-    document.getElementById("paidAmount").addEventListener("input", () => {
-      const total = saleItems.reduce((sum, i) => sum + i.total, 0);
-      const paid = parseFloat(document.getElementById("paidAmount").value) || 0;
-      const change = paid - total;
-      document.getElementById("changeAmount").textContent = "৳" + change.toFixed(2);
+      priceInput.value = "";
+      qtyInput.value = 1;
+      codeInput.value = "";
+      nameInput.value = "";
+      buyStock.textContent = "";
     });
 
-    function confirmSale() {
-      if (saleItems.length === 0) return alert("⚠️ No items added!");
+    // Render table
+    function renderTable() {
+      tableBody.innerHTML = "";
+      let total = 0;
+      saleItems.forEach((item, i) => {
+        total += item.subtotal;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.date}</td>
+          <td>${item.name}</td>
+          <td>${item.qty}</td>
+          <td>${item.price}</td>
+          <td>${item.subtotal}</td>
+          <td><button onclick="removeItem(${i})">❌</button></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+      totalEl.textContent = total;
+    }
 
-      const total = saleItems.reduce((sum, i) => sum + i.total, 0);
-      const paid = parseFloat(document.getElementById("paidAmount").value) || 0;
-      const change = paid - total;
-      const payment = document.getElementById("paymentMethod").value;
+    // Remove product
+    window.removeItem = (i) => {
+      saleItems.splice(i, 1);
+      renderTable();
+    };
 
-      const invoice = {
-        id: "INV" + Date.now(),
+    // Change calculation
+    paidInput.addEventListener("input", () => {
+      const paid = parseFloat(paidInput.value) || 0;
+      const total = parseFloat(totalEl.textContent);
+      changeEl.textContent = paid - total;
+    });
+
+    // Confirm Sale
+    confirmSaleBtn.addEventListener("click", () => {
+      if (saleItems.length === 0) return alert("No items added!");
+      const invoice = "INV-" + Date.now();
+      const total = totalEl.textContent;
+      const paid = paidInput.value;
+      const method = document.getElementById("paymentMethod").value;
+      const change = changeEl.textContent;
+
+      const sale = {
+        invoice,
         date: new Date().toLocaleString(),
         items: saleItems,
         total,
         paid,
+        method,
         change,
-        payment
       };
 
-      const history = JSON.parse(localStorage.getItem("saleHistory")) || [];
-      history.push(invoice);
-      localStorage.setItem("saleHistory", JSON.stringify(history));
+      const history = JSON.parse(localStorage.getItem("sales") || "[]");
+      history.push(sale);
+      localStorage.setItem("sales", JSON.stringify(history));
 
-      // Update product stock
-      saleItems.forEach(sale => {
-        const product = products.find(p => p.code === sale.code);
-        if (product) product.qty -= sale.qty;
-      });
-      localStorage.setItem("productStock", JSON.stringify(products));
-
-      alert("✅ Sale confirmed!");
+      alert(`✅ Sale Saved!\nInvoice: ${invoice}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
       saleItems = [];
       renderTable();
-      calculateTotal();
-      document.getElementById("paidAmount").value = "";
-      document.getElementById("changeAmount").textContent = "৳0";
-    }
+      paidInput.value = "";
+      changeEl.textContent = "0";
+    });
   </script>
 </body>
 </html>
