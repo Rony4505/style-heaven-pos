@@ -5,20 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Sale | Style Heaven POS</title>
   <style>
-    body { font-family: "Poppins", sans-serif; margin: 0; background: #f5f7fa; padding: 10px; }
-    header { background: #111; color: #fff; text-align: center; padding: 12px; border-radius: 8px; font-weight: 600; }
-    .container { background: #fff; padding: 20px; margin-top: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-    label { font-size: 14px; font-weight: 600; }
-    input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-    .half { flex: 1; min-width: 130px; }
-    .small-info { font-size: 12px; color: gray; }
-    .total { font-size: 22px; font-weight: bold; color: #007bff; margin: 10px 0; text-align: right; }
-    .pay-btn { flex: 1; background: #eee; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; transition: 0.3s; }
-    .pay-btn.active { background: #007bff; color: white; }
-    .confirm-btn { width: 100%; background: #28a745; color: white; border: none; padding: 14px; font-size: 18px; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-    .confirm-btn:hover { background: #218838; }
-    .back-btn { background: #6c757d; color: white; padding: 10px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; cursor: pointer; }
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background-color: #f5f7fa;
+      padding: 10px;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 18px;
+      border-radius: 8px;
+    }
+
+    .container {
+      margin-top: 15px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .half {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .small-info {
+      font-size: 12px;
+      color: gray;
+    }
+
+    .total {
+      font-size: 22px;
+      font-weight: bold;
+      color: #007bff;
+      margin: 10px 0;
+      text-align: right;
+    }
+
+    .pay-methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .pay-btn {
+      flex: 1;
+      background: #eee;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .pay-btn.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .confirm-btn {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    .confirm-btn:hover {
+      background: #218838;
+    }
+
+    .back-btn {
+      background: #6c757d;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -70,7 +170,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="pay-methods">
       <button class="pay-btn" data-method="Cash">💵 Cash</button>
       <button class="pay-btn" data-method="Bkash">📱 Bkash</button>
       <button class="pay-btn" data-method="Nagad">🟠 Nagad</button>
@@ -127,18 +227,16 @@
     // Auto-fill product by code
     codeEl.addEventListener("input", () => {
       const products = JSON.parse(localStorage.getItem("products") || "[]");
-      console.log("Loaded products:", products); // Debug log
-      const found = products.find(p => p.code?.trim() === codeEl.value.trim());
-
+      const found = products.find(p => p.code === codeEl.value);
       if (found) {
-        nameEl.value = found.name || "";
-        const buy = parseFloat(found.buyingPrice || found.buyPrice || found.buy || 0);
-        const stock = parseInt(found.qty || 0);
-        buyInfo.textContent = `Buying Price: ${buy} টাকা`;
-        stockInfo.textContent = `Stock Available: ${stock}`;
+        nameEl.value = found.name;
+        sellEl.value = found.sellingPrice;
+        buyInfo.textContent = "Buying Price: " + found.buyingPrice + " টাকা";
+        stockInfo.textContent = "Stock Available: " + found.qty;
       } else {
         nameEl.value = "";
-        buyInfo.textContent = "";
+        sellEl.value = "";
+        buyInfo.textContent = "Buying Price: 0 টাকা";
         stockInfo.textContent = "Stock not available!";
       }
     });
@@ -162,9 +260,7 @@
     // Confirm Sale
     confirmBtn.addEventListener("click", () => {
       const products = JSON.parse(localStorage.getItem("products") || "[]");
-      const found = products.find(p => p.code?.trim() === codeEl.value.trim());
-      console.log("Selected product:", found);
-
+      const found = products.find(p => p.code === codeEl.value);
       if (!found) return alert("❌ Product not found in stock!");
 
       if (parseInt(qtyEl.value) > found.qty) {
@@ -176,29 +272,27 @@
       found.qty -= parseInt(qtyEl.value);
       localStorage.setItem("products", JSON.stringify(products));
 
-      // Save sale
+      // Save to sale history
       const sales = JSON.parse(localStorage.getItem("sales") || "[]");
-      const buy = parseFloat(found.buyingPrice || found.buyPrice || found.buy || 0);
-
       const sale = {
         date: dateEl.value,
         invoice: invoiceEl.value,
-        customer: customerEl.value,
+        customer: customerEl.value || "Walk-in Customer",
         code: codeEl.value,
         name: nameEl.value,
-        qty: qtyEl.value,
-        buyingPrice: (buy * qtyEl.value).toFixed(2),
-        sellingPrice: (sellEl.value * qtyEl.value).toFixed(2),
-        total: totalEl.textContent,
-        change: changeEl.value,
-        payment: selectedPayment
+        qty: parseInt(qtyEl.value),
+        buyingPrice: found.buyingPrice,
+        sellingPrice: found.sellingPrice,
+        total: parseFloat(totalEl.textContent),
+        paid: parseFloat(paidEl.value),
+        change: parseFloat(changeEl.value),
+        payment: selectedPayment || "Cash"
       };
-
       sales.push(sale);
       localStorage.setItem("sales", JSON.stringify(sales));
       localStorage.setItem("invoice", inv);
 
-      alert("✅ Sale Confirmed!");
+      alert("✅ Sale Confirmed Successfully!");
       window.location.reload();
     });
   </script>
