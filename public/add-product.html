@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Product | Style Heaven POS</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background-color: #111;
+      color: #fff;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    h2 {
+      margin-top: 20px;
+    }
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    .back-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      margin: 15px;
+    }
+  </style>
+</head>
+<body>
+  <header>Style Heaven POS</header>
+
+  <h2>📦 Add New Product</h2>
+
+  <div class="form-container">
+    <label>Stock Date:</label>
+    <input type="date" id="stockDate">
+
+    <label>Product Name:</label>
+    <input type="text" id="productName" placeholder="e.g. T-Shirt">
+
+    <label>Product Code:</label>
+    <input type="text" id="productCode" placeholder="e.g. SH-101">
+
+    <label>Product Qty:</label>
+    <input type="number" id="productQty" placeholder="e.g. 50">
+
+    <label>Buying Price (৳):</label>
+    <input type="number" id="buyingPrice" placeholder="e.g. 250">
+
+    <label>Selling Price (৳):</label>
+    <input type="number" id="sellingPrice" placeholder="e.g. 400">
+
+    <button id="saveBtn">💾 Save Product</button>
+  </div>
+
+  <h3>🧾 Product List</h3>
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Stock Date</th>
+        <th>Product Name</th>
+        <th>Code</th>
+        <th>Qty</th>
+        <th>Buying (৳)</th>
+        <th>Selling (৳)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button class="back-btn" onclick="window.location.href='dashboard.html'">⬅️ Back</button>
+
+  <script>
+    const saveBtn = document.getElementById("saveBtn");
+    const tableBody = document.querySelector("#productTable tbody");
+
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      tableBody.innerHTML = "";
+      products.forEach(p => {
+        const row = `<tr>
+          <td>${p.date}</td>
+          <td>${p.name}</td>
+          <td>${p.code}</td>
+          <td>${p.qty}</td>
+          <td>${p.buy}</td>
+          <td>${p.sell}</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+      });
+    }
+
+    saveBtn.addEventListener("click", () => {
+      const date = document.getElementById("stockDate").value;
+      const name = document.getElementById("productName").value.trim();
+      const code = document.getElementById("productCode").value.trim();
+      const qty = document.getElementById("productQty").value;
+      const buy = document.getElementById("buyingPrice").value;
+      const sell = document.getElementById("sellingPrice").value;
+
+      if (!date || !name || !code || !qty || !buy || !sell) {
+        alert("⚠️ Please fill all fields!");
+        return;
+      }
+
+      const newProduct = { date, name, code, qty, buy, sell };
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      products.push(newProduct);
+      localStorage.setItem("products", JSON.stringify(products));
+
+      loadProducts();
+
+      document.querySelectorAll("input").forEach(i => i.value = "");
+      alert("✅ Product added successfully!");
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
