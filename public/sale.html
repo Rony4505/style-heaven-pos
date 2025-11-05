@@ -227,17 +227,13 @@
     // Auto-fill product by code
     codeEl.addEventListener("input", () => {
       const products = JSON.parse(localStorage.getItem("products") || "[]");
-      const found = products.find(p => p.code === codeEl.value.trim());
-      console.log("Product found:", found);
-
+      const found = products.find(p => p.code.trim() === codeEl.value.trim());
       if (found) {
         nameEl.value = found.name || "";
-        const buyingPrice =
-          found.buyingPrice || found.buy_price || found.buying_price || 0;
-        const stockQty = found.qty || 0;
-
-        buyInfo.textContent = "Buying Price: " + buyingPrice + " টাকা";
-        stockInfo.textContent = "Stock Available: " + stockQty;
+        const buy = parseFloat(found.buyingPrice) || 0;
+        const stock = parseInt(found.qty) || 0;
+        buyInfo.textContent = `Buying Price: ${buy} টাকা`;
+        stockInfo.textContent = `Stock Available: ${stock}`;
       } else {
         nameEl.value = "";
         buyInfo.textContent = "";
@@ -264,36 +260,32 @@
     // Confirm Sale
     confirmBtn.addEventListener("click", () => {
       const products = JSON.parse(localStorage.getItem("products") || "[]");
-      const found = products.find(p => p.code === codeEl.value.trim());
+      const found = products.find(p => p.code.trim() === codeEl.value.trim());
       if (!found) return alert("❌ Product not found in stock!");
 
-      const quantity = parseInt(qtyEl.value);
-      if (quantity > found.qty) {
+      if (parseInt(qtyEl.value) > found.qty) {
         alert("❌ Not enough stock available!");
         return;
       }
 
-      const buyingPrice =
-        found.buyingPrice || found.buy_price || found.buying_price || 0;
-
       // Update stock
-      found.qty -= quantity;
+      found.qty -= parseInt(qtyEl.value);
       localStorage.setItem("products", JSON.stringify(products));
 
-      // Save sale record
+      // Save to sale history
       const sales = JSON.parse(localStorage.getItem("sales") || "[]");
       const sale = {
         date: dateEl.value,
         invoice: invoiceEl.value,
-        customer: customerEl.value || "Walk-in Customer",
+        customer: customerEl.value,
         code: codeEl.value,
         name: nameEl.value,
-        qty: quantity,
-        buyingPrice: (buyingPrice * quantity).toFixed(2),
-        sellingPrice: (sellEl.value * quantity).toFixed(2),
+        qty: qtyEl.value,
+        buyingPrice: (found.buyingPrice * qtyEl.value).toFixed(2),
+        sellingPrice: (sellEl.value * qtyEl.value).toFixed(2),
         total: totalEl.textContent,
         change: changeEl.value,
-        payment: selectedPayment || "Cash",
+        payment: selectedPayment
       };
       sales.push(sale);
       localStorage.setItem("sales", JSON.stringify(sales));
