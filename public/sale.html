@@ -108,7 +108,6 @@
       const price = parseFloat(priceInput.value);
       const qty = parseInt(qtyInput.value);
       const date = dateInput.value;
-
       const p = products.find(pr => pr.code === code);
 
       if (!p) return alert("❌ Product not found in stock!");
@@ -116,9 +115,9 @@
       if (!price) return alert("⚠️ Please enter selling price!");
 
       const subtotal = price * qty;
-
       saleItems.push({ date, code, name, qty, price, subtotal });
       renderTable();
+
       codeInput.value = "";
       nameInput.value = "";
       qtyInput.value = 1;
@@ -149,33 +148,34 @@
       renderTable();
     };
 
-    // Paid & Change Calculation
+    // ✅ Change calculation (Paid - Total)
     paidInput.addEventListener("input", () => {
       const total = parseFloat(totalSpan.textContent) || 0;
       const paid = parseFloat(paidInput.value) || 0;
-      changeSpan.textContent = paid - total;
+      const change = paid - total;
+      changeSpan.textContent = change >= 0 ? change : 0;
     });
 
-    // Confirm Sale
+    // ✅ Confirm Sale
     document.getElementById("confirmBtn").addEventListener("click", () => {
       if (saleItems.length === 0) return alert("⚠️ No product added!");
       const total = parseFloat(totalSpan.textContent);
-      const paid = parseFloat(paidInput.value);
+      const paid = parseFloat(paidInput.value) || 0;
       const change = paid - total;
       const method = document.getElementById("method").value;
 
-      // Update stock
+      // Update stock after confirm
       saleItems.forEach(sale => {
         const p = products.find(pr => pr.code === sale.code);
         if (p) p.qty -= sale.qty;
       });
       localStorage.setItem("products", JSON.stringify(products));
 
-      // Generate Invoice Number
+      // Generate Invoice
       let inv = 1000 + (sales.length + 1);
 
-      // Save to sale history
-      sales.push({
+      // Save to sales
+      const saleData = {
         invoice: inv,
         date: new Date().toLocaleString(),
         items: saleItems,
@@ -183,12 +183,12 @@
         paid,
         change,
         method
-      });
+      };
+
+      sales.push(saleData);
       localStorage.setItem("sales", JSON.stringify(sales));
 
-      alert(
-        `✅ Sale Saved!\nInvoice: ${inv}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`
-      );
+      alert(`✅ Sale Saved!\nInvoice: ${inv}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
 
       saleItems = [];
       renderTable();
