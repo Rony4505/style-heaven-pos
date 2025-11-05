@@ -79,6 +79,7 @@
   </main>
 
   <script>
+    // Load from localStorage
     const sales = JSON.parse(localStorage.getItem("sales") || "[]");
     const products = JSON.parse(localStorage.getItem("products") || "[]");
     const tbody = document.querySelector("#historyTable tbody");
@@ -88,11 +89,16 @@
     } else {
       sales.forEach(sale => {
         sale.items.forEach(item => {
+          // Find product info
           const product = products.find(p => p.code === item.code);
           const buyingPrice = product ? parseFloat(product.buyingPrice) || 0 : 0;
-          const totalBuying = buyingPrice * item.qty; // ✅ Selling Qty × Buying Price
-          const totalSelling = item.price * item.qty;
+          const qty = parseFloat(item.qty) || 0;
+          
+          // ✅ এখন সঠিক হিসাব:
+          const totalBuying = qty * buyingPrice;
+          const totalSelling = qty * (parseFloat(item.price) || 0);
 
+          // Row create
           const row = `
             <tr>
               <td>${sale.date}</td>
@@ -100,7 +106,7 @@
               <td>${sale.customer || "-"}</td>
               <td>${item.code}</td>
               <td>${item.name}</td>
-              <td>${item.qty}</td>
+              <td>${qty}</td>
               <td>${totalBuying.toFixed(2)}</td>
               <td>${totalSelling.toFixed(2)}</td>
               <td>${sale.total}</td>
