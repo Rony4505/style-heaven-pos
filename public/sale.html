@@ -1,56 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Sale | Style Heaven POS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Sale - Style Heaven POS</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #f8f9fa;
+      background: #f8f9fa;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
     header {
-      background-color: #111;
+      background: #111;
       color: white;
       padding: 14px;
+      text-align: center;
       font-size: 18px;
       font-weight: 600;
     }
-    .container {
-      margin: 20px auto;
-      width: 95%;
-      max-width: 850px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    main {
+      text-align: center;
+      margin-top: 20px;
     }
-    input {
+    input, button {
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
       margin: 5px;
-      width: 160px;
-    }
-    button {
-      padding: 10px 15px;
-      border: none;
       border-radius: 6px;
-      background-color: #007bff;
-      color: white;
-      cursor: pointer;
-      font-size: 15px;
-    }
-    button:hover {
-      background-color: #0056b3;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
     table {
-      width: 100%;
+      width: 95%;
+      margin: 20px auto;
       border-collapse: collapse;
-      margin-top: 15px;
     }
     th, td {
       border: 1px solid #ddd;
@@ -58,199 +41,158 @@
       text-align: center;
     }
     th {
-      background-color: #007bff;
+      background: #111;
       color: white;
     }
-    .total-box {
-      margin-top: 15px;
-      font-size: 18px;
+    #total {
       font-weight: bold;
+      font-size: 18px;
+    }
+    .buying-price {
+      color: #777;
+      font-size: 13px;
     }
     .back-btn {
-      background-color: #6c757d;
-      margin-top: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
     }
     .back-btn:hover {
-      background-color: #5a6268;
-    }
-    .small-text {
-      font-size: 12px;
-      color: #666;
-      display: block;
-      margin-top: -3px;
+      background: #b02a37;
     }
   </style>
 </head>
 <body>
-  <header>Style Heaven POS</header>
+  <header>
+    Style Heaven POS - New Sale
+    <button class="back-btn" onclick="window.location.href='app.html'" style="float:right; margin-right:10px;">⬅️ Back</button>
+  </header>
 
-  <div class="container">
-    <h2>🧾 New Sale</h2>
-
+  <main>
+    <h2>🛍️ Create a New Sale</h2>
     <div>
-      <input type="text" id="date" readonly>
+      <input type="date" id="saleDate">
       <input type="text" id="productCode" placeholder="Product Code">
       <input type="text" id="productName" placeholder="Product Name" readonly>
-      <input type="text" id="buyPrice" placeholder="Buying Price (৳)" readonly>
-      <span class="small-text">Buying price info only</span>
-      <input type="text" id="stockQty" placeholder="Stock Qty" readonly>
-      <input type="number" id="qty" placeholder="Qty">
-      <input type="number" id="price" placeholder="Selling Price (৳)">
-      <button id="addBtn">Add</button>
+      <input type="number" id="price" placeholder="Price (৳)">
+      <input type="number" id="quantity" placeholder="Qty" value="1" min="1">
+      <span id="buyInfo" class="buying-price"></span>
+      <button onclick="addItem()">Add</button>
     </div>
 
-    <table id="productTable">
+    <table id="saleTable">
       <thead>
         <tr>
           <th>Date</th>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Buy (৳)</th>
-          <th>Stock</th>
+          <th>Product</th>
           <th>Qty</th>
-          <th>Sell (৳)</th>
+          <th>Price (৳)</th>
           <th>Subtotal (৳)</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
-    <div class="total-box">
-      Total: ৳<span id="totalAmount">0</span>
-    </div>
-
-    <button id="confirmSale">✅ Confirm Sale</button>
-    <button class="back-btn" onclick="window.location.href='app.html'">⬅️ Back</button>
-  </div>
+    <p id="total">Total: ৳0</p>
+    <button onclick="confirmSale()">✅ Confirm Sale</button>
+  </main>
 
   <script>
-    // 🔹 আজকের তারিখ সেট করা (সবসময় আজকের তারিখ দেখাবে)
-    function getTodayDate() {
-      const today = new Date();
-      return today.toLocaleDateString();
+    let items = [];
+    const stock = JSON.parse(localStorage.getItem("productStock")) || [];
+
+    // Set current date by default
+    document.getElementById("saleDate").valueAsDate = new Date();
+
+    const codeInput = document.getElementById("productCode");
+    const nameInput = document.getElementById("productName");
+    const priceInput = document.getElementById("price");
+    const qtyInput = document.getElementById("quantity");
+    const buyInfo = document.getElementById("buyInfo");
+
+    // 🔹 Auto fill product info when code entered
+    codeInput.addEventListener("change", function () {
+      const code = this.value.trim();
+      const found = stock.find(p => p.code === code);
+
+      if (!found) {
+        nameInput.value = "";
+        buyInfo.innerText = "❌ Stock not available";
+        return;
+      }
+
+      nameInput.value = found.name;
+      buyInfo.innerText = `Buying Price: ৳${found.buyPrice} | Stock: ${found.qty}`;
+    });
+
+    function addItem() {
+      const date = document.getElementById("saleDate").value;
+      const code = codeInput.value.trim();
+      const name = nameInput.value.trim();
+      const qty = parseInt(qtyInput.value);
+      const price = parseFloat(priceInput.value);
+      const product = stock.find(p => p.code === code);
+
+      if (!product) return alert("❌ Product not found!");
+      if (!date || !code || !name || isNaN(qty) || isNaN(price)) return alert("⚠️ Fill all fields!");
+      if (qty > product.qty) return alert("❌ Not enough stock available!");
+
+      const subtotal = qty * price;
+      items.push({ date, code, name, qty, price, subtotal });
+
+      renderTable();
+      codeInput.value = "";
+      nameInput.value = "";
+      qtyInput.value = 1;
+      priceInput.value = "";
+      buyInfo.innerText = "";
     }
-    document.getElementById("date").value = getTodayDate();
 
-    // 🔹 Dummy stock data (Add Product থেকে পরে লোড করা যাবে)
-    const stockList = [
-      { code: "P001", name: "T-Shirt", buyPrice: 300, stock: 15 },
-      { code: "P002", name: "Jeans Pant", buyPrice: 600, stock: 10 },
-      { code: "P003", name: "Polo Shirt", buyPrice: 450, stock: 8 },
-      { code: "P004", name: "Hoodie", buyPrice: 800, stock: 5 },
-      { code: "P005", name: "Shoes", buyPrice: 1100, stock: 2 }
-    ];
-
-    const dateInput = document.getElementById("date");
-    const productCode = document.getElementById("productCode");
-    const productName = document.getElementById("productName");
-    const buyPrice = document.getElementById("buyPrice");
-    const stockQty = document.getElementById("stockQty");
-    const qty = document.getElementById("qty");
-    const price = document.getElementById("price");
-    const addBtn = document.getElementById("addBtn");
-    const productTable = document.getElementById("productTable").getElementsByTagName("tbody")[0];
-    const totalAmount = document.getElementById("totalAmount");
-
-    // 🔹 Product code দিলে auto-fill
-    productCode.addEventListener("input", function() {
-      const found = stockList.find(p => p.code.toLowerCase() === productCode.value.trim().toLowerCase());
-      if (found) {
-        productName.value = found.name;
-        buyPrice.value = found.buyPrice;
-        stockQty.value = found.stock;
-      } else {
-        productName.value = "";
-        buyPrice.value = "";
-        stockQty.value = "";
-      }
-    });
-
-    // 🔹 Add product to table
-    addBtn.addEventListener("click", function() {
-      const date = getTodayDate();
-      const code = productCode.value.trim();
-      const name = productName.value.trim();
-      const buy = parseFloat(buyPrice.value);
-      const stock = parseFloat(stockQty.value);
-      const quantity = parseFloat(qty.value);
-      const sellPrice = parseFloat(price.value);
-
-      if (!code || !name || isNaN(stock)) {
-        alert("❌ Stock Not Available for this product!");
-        return;
-      }
-
-      if (quantity > stock) {
-        alert("⚠️ Not enough stock available!");
-        return;
-      }
-
-      if (quantity <= 0 || sellPrice <= 0) {
-        alert("❌ Please enter valid quantity and selling price!");
-        return;
-      }
-
-      const subtotal = quantity * sellPrice;
-      const newRow = productTable.insertRow();
-      newRow.innerHTML = `
-        <td>${date}</td>
-        <td>${code}</td>
-        <td>${name}</td>
-        <td>${buy}</td>
-        <td>${stock}</td>
-        <td>${quantity}</td>
-        <td>${sellPrice}</td>
-        <td>${subtotal}</td>
-      `;
-
-      updateTotal();
-      productCode.value = "";
-      productName.value = "";
-      buyPrice.value = "";
-      stockQty.value = "";
-      qty.value = "";
-      price.value = "";
-    });
-
-    function updateTotal() {
+    function renderTable() {
+      const tbody = document.querySelector("#saleTable tbody");
+      tbody.innerHTML = "";
       let total = 0;
-      for (let row of productTable.rows) {
-        total += parseFloat(row.cells[7].textContent);
-      }
-      totalAmount.textContent = total.toFixed(2);
+
+      items.forEach((item, i) => {
+        total += item.subtotal;
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.date}</td>
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>${item.price}</td>
+            <td>${item.subtotal}</td>
+            <td><button onclick="removeItem(${i})">❌</button></td>
+          </tr>
+        `;
+      });
+
+      document.getElementById("total").innerText = "Total: ৳" + total;
     }
 
-    // 🔹 Confirm Sale
-    document.getElementById("confirmSale").addEventListener("click", function() {
-      if (productTable.rows.length === 0) {
-        alert("❌ Please add at least one product!");
-        return;
-      }
+    function removeItem(index) {
+      items.splice(index, 1);
+      renderTable();
+    }
 
-      const total = parseFloat(totalAmount.textContent);
-      const paid = parseFloat(prompt("Enter paid amount (৳):") || 0);
-      const change = paid - total;
+    function confirmSale() {
+      if (items.length === 0) return alert("No items added!");
+      const total = items.reduce((a, b) => a + b.subtotal, 0);
 
-      const invoice = "INV-" + Date.now();
-      const date = new Date().toLocaleString();
+      alert("✅ Sale confirmed! Total: ৳" + total);
 
-      const saleData = {
-        invoice: invoice,
-        date: date,
-        total: total.toFixed(2),
-        paid: paid.toFixed(2),
-        change: change.toFixed(2),
-      };
+      // Save to Sale History
+      let sales = JSON.parse(localStorage.getItem("saleHistory")) || [];
+      sales.push({ items, total, date: new Date().toLocaleString() });
+      localStorage.setItem("saleHistory", JSON.stringify(sales));
 
-      let history = JSON.parse(localStorage.getItem("salesHistory")) || [];
-      history.push(saleData);
-      localStorage.setItem("salesHistory", JSON.stringify(history));
-
-      alert(`✅ Sale Saved!\nInvoice: ${invoice}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
-
-      productTable.innerHTML = "";
-      updateTotal();
-    });
+      items = [];
+      renderTable();
+    }
   </script>
 </body>
 </html>
