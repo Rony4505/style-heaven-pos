@@ -4,95 +4,116 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sale History - Style Heaven POS</title>
-  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f8f9fa;
       margin: 0;
+      background: #f5f5f5;
     }
     header {
       background: #111;
       color: white;
       text-align: center;
-      padding: 14px;
-      font-size: 18px;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: 600;
       position: relative;
     }
-    header button {
+    button {
       position: absolute;
-      right: 10px;
+      right: 15px;
       top: 10px;
       background: red;
-      border: none;
       color: white;
-      padding: 6px 10px;
+      border: none;
       border-radius: 6px;
+      padding: 8px 12px;
       cursor: pointer;
     }
-    main {
-      padding: 20px;
-    }
     table {
-      width: 100%;
+      width: 96%;
+      margin: 20px auto;
       border-collapse: collapse;
-      margin-top: 15px;
       background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     th, td {
       border: 1px solid #ddd;
       padding: 10px;
       text-align: center;
+      font-size: 14px;
     }
     th {
-      background: #111;
+      background: #222;
       color: white;
+    }
+    tr:hover {
+      background: #f1f1f1;
     }
   </style>
 </head>
 <body>
   <header>
-    Sale History
+    Style Heaven POS - Sale History
     <button onclick="window.location.href='app.html'">Back</button>
   </header>
 
   <main>
-    <table>
+    <table id="historyTable">
       <thead>
         <tr>
+          <th>Date</th>
           <th>Invoice No</th>
-          <th>Date & Time</th>
+          <th>Customer Name</th>
+          <th>Product Code</th>
           <th>Product Name</th>
-          <th>Product Qty</th>
+          <th>Qty</th>
+          <th>Total Buying Price (৳)</th>
+          <th>Total Selling Price (৳)</th>
           <th>Total (৳)</th>
-          <th>Paid By</th>
-          <th>Pay Taka (৳)</th>
           <th>Change (৳)</th>
         </tr>
       </thead>
-      <tbody id="historyTable">
-        <tr>
-          <td>INV001</td>
-          <td>2025-11-04 12:30 PM</td>
-          <td>T-shirt</td>
-          <td>2</td>
-          <td>800</td>
-          <td>Cash</td>
-          <td>1000</td>
-          <td>200</td>
-        </tr>
-        <tr>
-          <td>INV002</td>
-          <td>2025-11-04 01:10 PM</td>
-          <td>Jeans</td>
-          <td>1</td>
-          <td>1200</td>
-          <td>Card</td>
-          <td>1200</td>
-          <td>0</td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </main>
+
+  <script>
+    const sales = JSON.parse(localStorage.getItem("sales") || "[]");
+    const products = JSON.parse(localStorage.getItem("products") || "[]");
+    const tbody = document.querySelector("#historyTable tbody");
+
+    if (sales.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10">No sale records found</td></tr>`;
+    } else {
+      sales.forEach(sale => {
+        let totalAmount = 0;
+
+        sale.items.forEach(item => {
+          const product = products.find(p => p.code === item.code);
+          const buyingPrice = product ? product.buyingPrice : 0;
+          const totalBuying = buyingPrice * item.qty;
+          const totalSelling = item.price * item.qty;
+          totalAmount += totalSelling;
+
+          const row = `
+            <tr>
+              <td>${sale.date}</td>
+              <td>${sale.invoice}</td>
+              <td>${sale.customer || "-"}</td>
+              <td>${item.code}</td>
+              <td>${item.name}</td>
+              <td>${item.qty}</td>
+              <td>${totalBuying.toFixed(2)}</td>
+              <td>${totalSelling.toFixed(2)}</td>
+              <td>${totalAmount.toFixed(2)}</td>
+              <td>${sale.change}</td>
+            </tr>
+          `;
+          tbody.innerHTML += row;
+        });
+      });
+    }
+  </script>
 </body>
 </html>
