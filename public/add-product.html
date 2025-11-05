@@ -6,173 +6,135 @@
   <title>Add Product | Style Heaven POS</title>
   <style>
     body {
+      margin: 0;
       font-family: "Poppins", sans-serif;
       background-color: #f5f7fa;
-      margin: 0;
-      padding: 0;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
     }
     header {
       background-color: #111;
-      color: #fff;
+      color: white;
       padding: 14px;
-      font-size: 18px;
+      width: 100%;
+      text-align: center;
       font-weight: 600;
+      font-size: 18px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    main {
+      flex: 1;
+      width: 90%;
+      max-width: 400px;
+      background-color: white;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     h2 {
-      margin-top: 20px;
-    }
-    .form-container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 500px;
-      margin: 20px auto;
-      text-align: left;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 20px;
     }
     label {
-      display: block;
-      margin-top: 10px;
       font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
     }
     input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-top: 5px;
+      margin-bottom: 15px;
+      font-size: 14px;
     }
     button {
-      margin-top: 15px;
       width: 100%;
-      padding: 10px;
       background-color: #007bff;
       color: white;
       border: none;
+      padding: 10px;
       border-radius: 6px;
-      cursor: pointer;
       font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
     }
     button:hover {
       background-color: #0056b3;
     }
-    table {
-      width: 90%;
-      margin: 20px auto;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
     .back-btn {
-      background-color: #dc3545;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      cursor: pointer;
-      margin: 15px;
+      background-color: #555;
+      margin-top: 15px;
+    }
+    .back-btn:hover {
+      background-color: #333;
+    }
+    footer {
+      text-align: center;
+      padding: 10px;
+      color: #666;
+      font-size: 13px;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <header>Style Heaven POS</header>
+  <header>➕ Add Product</header>
 
-  <h2>📦 Add New Product</h2>
+  <main>
+    <h2>🧾 New Product Entry</h2>
+    <label for="stockDate">Stock Date</label>
+    <input type="date" id="stockDate" />
 
-  <div class="form-container">
-    <label>Stock Date:</label>
-    <input type="date" id="stockDate">
+    <label for="productName">Product Name</label>
+    <input type="text" id="productName" placeholder="e.g. Denim Shirt" />
 
-    <label>Product Name:</label>
-    <input type="text" id="productName" placeholder="e.g. T-Shirt">
+    <label for="productCode">Product Code</label>
+    <input type="text" id="productCode" placeholder="e.g. SH123" />
 
-    <label>Product Code:</label>
-    <input type="text" id="productCode" placeholder="e.g. SH-101">
+    <label for="productQty">Product Qty</label>
+    <input type="number" id="productQty" placeholder="e.g. 10" />
 
-    <label>Product Qty:</label>
-    <input type="number" id="productQty" placeholder="e.g. 50">
+    <label for="buyPrice">Buying Price (৳)</label>
+    <input type="number" id="buyPrice" placeholder="e.g. 450" />
 
-    <label>Buying Price (৳):</label>
-    <input type="number" id="buyingPrice" placeholder="e.g. 250">
+    <label for="sellPrice">Selling Price (৳)</label>
+    <input type="number" id="sellPrice" placeholder="e.g. 650" />
 
-    <label>Selling Price (৳):</label>
-    <input type="number" id="sellingPrice" placeholder="e.g. 400">
+    <button id="saveProduct">💾 Save Product</button>
+    <button class="back-btn" onclick="window.location.href='app.html'">⬅️ Back</button>
+  </main>
 
-    <button id="saveBtn">💾 Save Product</button>
-  </div>
-
-  <h3>🧾 Product List</h3>
-  <table id="productTable">
-    <thead>
-      <tr>
-        <th>Stock Date</th>
-        <th>Product Name</th>
-        <th>Code</th>
-        <th>Qty</th>
-        <th>Buying (৳)</th>
-        <th>Selling (৳)</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <button class="back-btn" onclick="window.location.href='dashboard.html'">⬅️ Back</button>
+  <footer>Style Heaven POS © 2025</footer>
 
   <script>
-    const saveBtn = document.getElementById("saveBtn");
-    const tableBody = document.querySelector("#productTable tbody");
-
-    function loadProducts() {
-      const products = JSON.parse(localStorage.getItem("products")) || [];
-      tableBody.innerHTML = "";
-      products.forEach(p => {
-        const row = `<tr>
-          <td>${p.date}</td>
-          <td>${p.name}</td>
-          <td>${p.code}</td>
-          <td>${p.qty}</td>
-          <td>${p.buy}</td>
-          <td>${p.sell}</td>
-        </tr>`;
-        tableBody.innerHTML += row;
-      });
-    }
-
-    saveBtn.addEventListener("click", () => {
-      const date = document.getElementById("stockDate").value;
+    document.getElementById("saveProduct").addEventListener("click", () => {
+      const stockDate = document.getElementById("stockDate").value;
       const name = document.getElementById("productName").value.trim();
       const code = document.getElementById("productCode").value.trim();
-      const qty = document.getElementById("productQty").value;
-      const buy = document.getElementById("buyingPrice").value;
-      const sell = document.getElementById("sellingPrice").value;
+      const qty = document.getElementById("productQty").value.trim();
+      const buy = document.getElementById("buyPrice").value.trim();
+      const sell = document.getElementById("sellPrice").value.trim();
 
-      if (!date || !name || !code || !qty || !buy || !sell) {
-        alert("⚠️ Please fill all fields!");
+      if (!stockDate || !name || !code || !qty || !buy || !sell) {
+        alert("⚠️ সব তথ্য পূরণ করুন!");
         return;
       }
 
-      const newProduct = { date, name, code, qty, buy, sell };
-      const products = JSON.parse(localStorage.getItem("products")) || [];
-      products.push(newProduct);
-      localStorage.setItem("products", JSON.stringify(products));
+      const product = { stockDate, name, code, qty, buy, sell };
+      let allProducts = JSON.parse(localStorage.getItem("products") || "[]");
+      allProducts.push(product);
+      localStorage.setItem("products", JSON.stringify(allProducts));
 
-      loadProducts();
-
-      document.querySelectorAll("input").forEach(i => i.value = "");
-      alert("✅ Product added successfully!");
+      alert("✅ Product Saved Successfully!");
+      document.querySelectorAll("input").forEach(input => input.value = "");
     });
-
-    loadProducts();
   </script>
 </body>
 </html>
