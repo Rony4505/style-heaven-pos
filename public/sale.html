@@ -5,197 +5,232 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Sale | Style Heaven POS</title>
   <style>
-    body { font-family: "Poppins", sans-serif; background: #f7f9fb; margin: 0; padding: 0; text-align: center; }
-    header { background: #111; color: white; padding: 12px; font-weight: 600; }
-    .container { margin: 20px auto; width: 95%; max-width: 900px; background: white; padding: 20px; border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    input, select, button { padding: 8px; margin: 4px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
-    button { background: #007bff; color: white; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background: #007bff; color: white; }
-    .back-btn { background: red; position: absolute; top: 10px; right: 10px; }
-    .summary { background: #f0f4ff; padding: 12px; margin-top: 10px; border-radius: 8px; }
-    .confirm { background: #007bff; color: white; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; margin-top: 10px; }
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #f8f9fa;
+      text-align: center;
+    }
+    header {
+      background-color: #111;
+      color: white;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    table {
+      width: 95%;
+      margin: 15px auto;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-size: 14px;
+    }
+    .btn-add { background: #007bff; }
+    .btn-confirm { background: #28a745; }
+    .btn-back { background: #dc3545; margin: 10px; float: right; }
+    input, select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin: 5px;
+    }
+    .summary {
+      background: #fff;
+      width: 95%;
+      margin: 10px auto;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
-  <header>Style Heaven POS - New Sale</header>
-  <button class="back-btn" onclick="window.location.href='app.html'">🔙 Back</button>
+  <header>Style Heaven POS - New Sale
+    <button class="btn-back" onclick="goBack()">🔙 Back</button>
+  </header>
 
-  <div class="container">
-    <h2>🧾 Create a New Sale</h2>
-    <div>
-      <input type="date" id="date" />
-      <input type="text" id="customer" placeholder="Customer Name" />
-      <input type="text" id="code" placeholder="Product Code" />
-      <input type="text" id="name" placeholder="Product Name" readonly />
-      <input type="number" id="price" placeholder="Selling Price (৳)" />
-      <input type="number" id="qty" placeholder="Qty" min="1" value="1" />
-      <span id="info" style="font-size:13px; color:#333;"></span>
-      <button id="addBtn">Add</button>
-    </div>
+  <h2>🧾 Create a New Sale</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Product</th>
-          <th>Qty</th>
-          <th>Price (৳)</th>
-          <th>Subtotal (৳)</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="saleTable"></tbody>
-    </table>
+  <div>
+    <input type="date" id="saleDate" />
+    <input type="text" id="customer" placeholder="Customer Name" />
+    <input type="text" id="productCode" placeholder="Product Code" />
+    <input type="text" id="productName" placeholder="Product Name" readonly />
+    <input type="number" id="sellingPrice" placeholder="Selling Price (৳)" />
+    <input type="number" id="qty" placeholder="Qty" min="1" value="1" />
+    <span id="buyInfo"></span>
+    <button class="btn-add" onclick="addProduct()">Add</button>
+  </div>
 
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price (৳)</th>
+        <th>Subtotal (৳)</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="cartBody"></tbody>
+  </table>
+
+  <div class="summary">
     <h3>Total: ৳<span id="total">0</span></h3>
-
-    <div class="summary">
-      <label>Payment Method:</label>
-      <select id="method">
+    <div>
+      Payment Method:
+      <select id="paymentMethod">
         <option>Cash</option>
+        <option>Bank</option>
         <option>Bkash</option>
         <option>Nagad</option>
-        <option>Card</option>
       </select>
-      <br />
-      <label>Paid (৳):</label>
-      <input type="number" id="paid" placeholder="Enter Paid Amount" />
-      <br />
-      <h4>Change: ৳<span id="change">0</span></h4>
     </div>
-
-    <button class="confirm" id="confirmBtn">✅ Confirm Sale</button>
+    <div>
+      Paid (৳): <input type="number" id="paidAmount" placeholder="Enter Paid Amount" />
+    </div>
+    <div>Change: ৳<span id="change">0</span></div>
+    <button class="btn-confirm" id="confirmSale">✅ Confirm Sale</button>
   </div>
 
   <script>
-    const dateInput = document.getElementById("date");
-    const codeInput = document.getElementById("code");
-    const nameInput = document.getElementById("name");
-    const qtyInput = document.getElementById("qty");
-    const priceInput = document.getElementById("price");
-    const infoSpan = document.getElementById("info");
-    const saleTable = document.getElementById("saleTable");
-    const totalSpan = document.getElementById("total");
-    const paidInput = document.getElementById("paid");
-    const changeSpan = document.getElementById("change");
+    const cart = [];
+    let invoiceNumber = 1001;
 
-    dateInput.valueAsDate = new Date();
+    document.getElementById("saleDate").valueAsDate = new Date();
 
-    let saleItems = [];
-    let products = JSON.parse(localStorage.getItem("products") || "[]");
-    let sales = JSON.parse(localStorage.getItem("sales") || "[]");
+    // Load products from localStorage
+    const products = JSON.parse(localStorage.getItem("products") || "[]");
 
-    // Product auto-fill
-    codeInput.addEventListener("input", () => {
-      const p = products.find(pr => pr.code === codeInput.value.trim());
-      if (p) {
-        nameInput.value = p.name;
-        infoSpan.textContent = `Buying: ৳${p.buying} | Stock: ${p.qty}`;
+    document.getElementById("productCode").addEventListener("change", function() {
+      const code = this.value.trim();
+      const product = products.find(p => p.code === code);
+
+      if (product) {
+        document.getElementById("productName").value = product.name;
+        document.getElementById("buyInfo").textContent = 
+          `Buying: ৳${product.buyingPrice} | Stock: ${product.qty}`;
       } else {
-        nameInput.value = "";
-        infoSpan.textContent = "❌ Stock not available";
+        document.getElementById("productName").value = "";
+        document.getElementById("buyInfo").textContent = "⚠️ Stock not available";
       }
     });
 
-    // Add product to sale table
-    document.getElementById("addBtn").addEventListener("click", () => {
-      const code = codeInput.value.trim();
-      const name = nameInput.value.trim();
-      const price = parseFloat(priceInput.value);
-      const qty = parseInt(qtyInput.value);
-      const date = dateInput.value;
-      const p = products.find(pr => pr.code === code);
+    function addProduct() {
+      const code = document.getElementById("productCode").value.trim();
+      const name = document.getElementById("productName").value.trim();
+      const price = parseFloat(document.getElementById("sellingPrice").value);
+      const qty = parseInt(document.getElementById("qty").value);
+      const date = document.getElementById("saleDate").value;
 
-      if (!p) return alert("❌ Product not found in stock!");
-      if (qty > p.qty) return alert("⚠️ Not enough stock!");
-      if (!price) return alert("⚠️ Please enter selling price!");
+      const product = products.find(p => p.code === code);
 
-      const subtotal = price * qty;
-      saleItems.push({ date, code, name, qty, price, subtotal });
-      renderTable();
+      if (!product || qty > product.qty) {
+        alert("⚠️ Stock not available or insufficient!");
+        return;
+      }
 
-      codeInput.value = "";
-      nameInput.value = "";
-      qtyInput.value = 1;
-      priceInput.value = "";
-      infoSpan.textContent = "";
-    });
+      if (!name || !price || qty <= 0) {
+        alert("⚠️ Please fill all fields properly!");
+        return;
+      }
 
-    function renderTable() {
-      saleTable.innerHTML = "";
-      let total = 0;
-      saleItems.forEach((item, i) => {
-        total += item.subtotal;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${item.date}</td>
-          <td>${item.name}</td>
-          <td>${item.qty}</td>
-          <td>${item.price}</td>
-          <td>${item.subtotal}</td>
-          <td><button onclick="removeItem(${i})">❌</button></td>`;
-        saleTable.appendChild(tr);
-      });
-      totalSpan.textContent = total;
+      cart.push({ date, code, name, qty, price });
+      updateCart();
     }
 
-    window.removeItem = (i) => {
-      saleItems.splice(i, 1);
-      renderTable();
-    };
+    function updateCart() {
+      const cartBody = document.getElementById("cartBody");
+      cartBody.innerHTML = "";
+      let total = 0;
 
-    // ✅ Change calculation (Paid - Total)
-    paidInput.addEventListener("input", () => {
-      const total = parseFloat(totalSpan.textContent) || 0;
-      const paid = parseFloat(paidInput.value) || 0;
-      const change = paid - total;
-      changeSpan.textContent = change >= 0 ? change : 0;
+      cart.forEach((item, index) => {
+        const subtotal = item.qty * item.price;
+        total += subtotal;
+
+        const row = `
+          <tr>
+            <td>${item.date}</td>
+            <td>${item.name}</td>
+            <td>${item.qty}</td>
+            <td>${item.price}</td>
+            <td>${subtotal}</td>
+            <td><button onclick="removeItem(${index})">❌</button></td>
+          </tr>`;
+        cartBody.innerHTML += row;
+      });
+
+      document.getElementById("total").textContent = total;
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCart();
+    }
+
+    document.getElementById("paidAmount").addEventListener("input", function() {
+      const total = parseFloat(document.getElementById("total").textContent);
+      const paid = parseFloat(this.value) || 0;
+      document.getElementById("change").textContent = paid - total;
     });
 
-    // ✅ Confirm Sale
-    document.getElementById("confirmBtn").addEventListener("click", () => {
-      if (saleItems.length === 0) return alert("⚠️ No product added!");
-      const total = parseFloat(totalSpan.textContent);
-      const paid = parseFloat(paidInput.value) || 0;
+    document.getElementById("confirmSale").addEventListener("click", function() {
+      if (cart.length === 0) return alert("❌ No products added!");
+
+      const total = parseFloat(document.getElementById("total").textContent);
+      const paid = parseFloat(document.getElementById("paidAmount").value) || 0;
       const change = paid - total;
-      const method = document.getElementById("method").value;
+      const method = document.getElementById("paymentMethod").value;
+      const date = document.getElementById("saleDate").value;
 
-      // Update stock after confirm
-      saleItems.forEach(sale => {
-        const p = products.find(pr => pr.code === sale.code);
-        if (p) p.qty -= sale.qty;
-      });
-      localStorage.setItem("products", JSON.stringify(products));
-
-      // Generate Invoice
-      let inv = 1000 + (sales.length + 1);
-
-      // Save to sales
       const saleData = {
-        invoice: inv,
-        date: new Date().toLocaleString(),
-        items: saleItems,
+        invoice: "INV-" + invoiceNumber++,
+        date,
         total,
         paid,
         change,
-        method
+        method,
+        items: cart
       };
 
+      // ✅ Save to sale history
+      const sales = JSON.parse(localStorage.getItem("sales") || "[]");
       sales.push(saleData);
       localStorage.setItem("sales", JSON.stringify(sales));
 
-      alert(`✅ Sale Saved!\nInvoice: ${inv}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
+      // ✅ Update stock
+      saleData.items.forEach(saleItem => {
+        const product = products.find(p => p.code === saleItem.code);
+        if (product) {
+          product.qty -= saleItem.qty;
+        }
+      });
+      localStorage.setItem("products", JSON.stringify(products));
 
-      saleItems = [];
-      renderTable();
-      totalSpan.textContent = 0;
-      paidInput.value = "";
-      changeSpan.textContent = 0;
+      alert(`✅ Sale Saved!\nInvoice: ${saleData.invoice}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
+      cart.length = 0;
+      updateCart();
     });
+
+    function goBack() {
+      window.location.href = "app.html";
+    }
   </script>
 </body>
 </html>
