@@ -8,36 +8,24 @@
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background-color: #fafafa;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      background-color: #f5f5f5;
+      text-align: center;
     }
     header {
       background-color: #111;
       color: white;
       padding: 14px;
-      text-align: center;
       font-weight: 600;
       font-size: 18px;
     }
-    main {
-      flex: 1;
-      padding: 20px;
-      text-align: center;
-    }
     h2 {
-      margin-bottom: 20px;
+      margin-top: 40px;
     }
-    .menu {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-    .menu button {
+    .btn {
+      display: block;
       width: 200px;
-      background-color: #007bff;
+      margin: 10px auto;
+      background: #007bff;
       color: white;
       border: none;
       border-radius: 8px;
@@ -46,41 +34,44 @@
       cursor: pointer;
       transition: 0.2s;
     }
-    .menu button:hover {
-      background-color: #0056b3;
+    .btn:hover {
+      background: #0056b3;
     }
     .logout {
-      background-color: #ff3b30;
+      background: #ff3b30;
     }
     .logout:hover {
-      background-color: #d32f2f;
+      background: #d32f2f;
+    }
+    footer {
+      margin-top: 40px;
+      color: #555;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <header>Style Heaven POS</header>
+
   <main>
     <h2>🛍️ Welcome, Rony!</h2>
-    <div class="menu">
-      <button onclick="window.location.href='sale.html'">🛒 New Sale</button>
-      <button onclick="window.location.href='history.html'">📜 Sale History</button>
-      <button onclick="window.location.href='settings.html'">⚙️ Settings</button>
-      <button class="logout" id="logoutBtn">🚪 Logout</button>
-    </div>
+    <button class="btn" onclick="goTo('sale.html')">🧾 New Sale</button>
+    <button class="btn" onclick="goTo('history.html')">📜 Sale History</button>
+    <button class="btn" onclick="goTo('add-product.html')">➕ Add Product</button>
+    <button class="btn" onclick="goTo('settings.html')">⚙️ Settings</button>
+    <button class="btn logout" onclick="logout()">🚪 Logout</button>
   </main>
 
+  <footer>© 2025 Style Heaven</footer>
+
   <script>
-    // যদি ইউজার লগইন না করে থাকে, তাহলে সরাসরি লগইন পেজে পাঠাবে
-    if (!localStorage.getItem("loggedIn")) {
+    function goTo(page) {
+      window.location.href = page;
+    }
+    function logout() {
+      localStorage.removeItem("loggedIn");
       window.location.href = "index.html";
     }
-
-    // Logout বাটনের কাজ
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      localStorage.removeItem("loggedIn"); // লগইন ডেটা মুছে ফেলবে
-      alert("👋 Logged out successfully!");
-      window.location.href = "index.html"; // লগইন পেজে ফিরে যাবে
-    });
   </script>
 </body>
 </html>
