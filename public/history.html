@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sale History - Style Heaven POS</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background: #f8f8f8;
+      background: #f8f9fa;
       margin: 0;
     }
     header {
@@ -15,104 +16,83 @@
       color: white;
       text-align: center;
       padding: 14px;
-      font-weight: 600;
+      font-size: 18px;
       position: relative;
     }
     header button {
       position: absolute;
-      left: 10px;
-      top: 8px;
-      background: #ff3b30;
-      color: white;
+      right: 10px;
+      top: 10px;
+      background: red;
       border: none;
-      border-radius: 6px;
+      color: white;
       padding: 6px 10px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+    }
+    main {
+      padding: 20px;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 15px;
+      background: white;
     }
     th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
       padding: 10px;
       text-align: center;
     }
     th {
-      background: #007bff;
+      background: #111;
       color: white;
-    }
-    button.clear {
-      background: #ff3b30;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 10px;
     }
   </style>
 </head>
 <body>
   <header>
-    <button onclick="window.location.href='app.html'">← Back</button>
-    📜 Sale History
+    Sale History
+    <button onclick="window.location.href='app.html'">Back</button>
   </header>
 
-  <main style="padding:10px;">
-    <table id="historyTable">
+  <main>
+    <table>
       <thead>
         <tr>
           <th>Invoice No</th>
           <th>Date & Time</th>
-          <th>Product Details</th>
+          <th>Product Name</th>
+          <th>Product Qty</th>
           <th>Total (৳)</th>
           <th>Paid By</th>
-          <th>Pay (৳)</th>
-          <th>Due (৳)</th>
+          <th>Pay Taka (৳)</th>
+          <th>Change (৳)</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="historyTable">
+        <tr>
+          <td>INV001</td>
+          <td>2025-11-04 12:30 PM</td>
+          <td>T-shirt</td>
+          <td>2</td>
+          <td>800</td>
+          <td>Cash</td>
+          <td>1000</td>
+          <td>200</td>
+        </tr>
+        <tr>
+          <td>INV002</td>
+          <td>2025-11-04 01:10 PM</td>
+          <td>Jeans</td>
+          <td>1</td>
+          <td>1200</td>
+          <td>Card</td>
+          <td>1200</td>
+          <td>0</td>
+        </tr>
+      </tbody>
     </table>
-    <button class="clear" onclick="clearHistory()">🗑️ Clear All</button>
   </main>
-
-  <script>
-    const historyTable = document.querySelector("#historyTable tbody");
-    const history = JSON.parse(localStorage.getItem("salesHistory")) || [];
-
-    function renderHistory() {
-      historyTable.innerHTML = "";
-      if (history.length === 0) {
-        historyTable.innerHTML = "<tr><td colspan='7'>No sales found</td></tr>";
-        return;
-      }
-      history.forEach((sale) => {
-        const products = sale.items.map(i => `${i.name} (${i.qty}x৳${i.price})`).join(", ");
-        const row = `
-          <tr>
-            <td>${sale.invoice}</td>
-            <td>${sale.date}</td>
-            <td>${products}</td>
-            <td>${sale.total}</td>
-            <td>${sale.paidBy}</td>
-            <td>${sale.payAmount}</td>
-            <td>${sale.due}</td>
-          </tr>`;
-        historyTable.innerHTML += row;
-      });
-    }
-
-    function clearHistory() {
-      if (confirm("Clear all sale history?")) {
-        localStorage.removeItem("salesHistory");
-        renderHistory();
-      }
-    }
-
-    renderHistory();
-  </script>
 </body>
 </html>
