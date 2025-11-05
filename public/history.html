@@ -87,14 +87,11 @@
       tbody.innerHTML = `<tr><td colspan="10">No sale records found</td></tr>`;
     } else {
       sales.forEach(sale => {
-        let totalAmount = 0;
-
         sale.items.forEach(item => {
           const product = products.find(p => p.code === item.code);
-          const buyingPrice = product ? product.buyingPrice : 0;
-          const totalBuying = buyingPrice * item.qty;
+          const buyingPrice = product ? parseFloat(product.buyingPrice) || 0 : 0;
+          const totalBuying = buyingPrice * item.qty; // ✅ Selling Qty × Buying Price
           const totalSelling = item.price * item.qty;
-          totalAmount += totalSelling;
 
           const row = `
             <tr>
@@ -106,7 +103,7 @@
               <td>${item.qty}</td>
               <td>${totalBuying.toFixed(2)}</td>
               <td>${totalSelling.toFixed(2)}</td>
-              <td>${totalAmount.toFixed(2)}</td>
+              <td>${sale.total}</td>
               <td>${sale.change}</td>
             </tr>
           `;
