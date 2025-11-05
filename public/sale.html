@@ -5,82 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Sale | Style Heaven POS</title>
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background: #111;
-      color: white;
-      padding: 12px;
-      font-weight: 600;
-    }
-    .container {
-      margin: 20px auto;
-      width: 95%;
-      max-width: 800px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    input, select, button {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    button {
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    th {
-      background: #007bff;
-      color: white;
-    }
-    .total-box {
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    .payment-section {
-      margin-top: 15px;
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 8px;
-    }
-    .back-btn {
-      background: red;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    .small-text {
-      font-size: 12px;
-      color: #555;
-    }
+    body { font-family: "Poppins", sans-serif; background: #f7f9fb; margin: 0; padding: 0; text-align: center; }
+    header { background: #111; color: white; padding: 12px; font-weight: 600; }
+    .container { margin: 20px auto; width: 95%; max-width: 900px; background: white; padding: 20px; border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    input, select, button { padding: 8px; margin: 4px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    button { background: #007bff; color: white; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #007bff; color: white; }
+    .back-btn { background: red; position: absolute; top: 10px; right: 10px; }
+    .summary { background: #f0f4ff; padding: 12px; margin-top: 10px; border-radius: 8px; }
+    .confirm { background: #007bff; color: white; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -89,13 +26,14 @@
 
   <div class="container">
     <h2>🧾 Create a New Sale</h2>
-    <div class="form-row">
+    <div>
       <input type="date" id="date" />
+      <input type="text" id="customer" placeholder="Customer Name" />
       <input type="text" id="code" placeholder="Product Code" />
-      <input type="text" id="productName" placeholder="Product Name" readonly />
+      <input type="text" id="name" placeholder="Product Name" readonly />
       <input type="number" id="price" placeholder="Selling Price (৳)" />
-      <input type="number" id="qty" placeholder="Qty" value="1" min="1" />
-      <span id="buyStock" class="small-text"></span>
+      <input type="number" id="qty" placeholder="Qty" min="1" value="1" />
+      <span id="info" style="font-size:13px; color:#333;"></span>
       <button id="addBtn">Add</button>
     </div>
 
@@ -113,82 +51,83 @@
       <tbody id="saleTable"></tbody>
     </table>
 
-    <div class="total-box">Total: ৳<span id="total">0</span></div>
+    <h3>Total: ৳<span id="total">0</span></h3>
 
-    <div class="payment-section">
+    <div class="summary">
       <label>Payment Method:</label>
-      <select id="paymentMethod">
-        <option value="Cash">Cash</option>
-        <option value="bKash">bKash</option>
-        <option value="Nagad">Nagad</option>
-        <option value="Card">Card</option>
+      <select id="method">
+        <option>Cash</option>
+        <option>Bkash</option>
+        <option>Nagad</option>
+        <option>Card</option>
       </select>
-      <br><br>
+      <br />
       <label>Paid (৳):</label>
       <input type="number" id="paid" placeholder="Enter Paid Amount" />
-      <p>Change: ৳<span id="change">0</span></p>
+      <br />
+      <h4>Change: ৳<span id="change">0</span></h4>
     </div>
 
-    <button id="confirmSale">✅ Confirm Sale</button>
+    <button class="confirm" id="confirmBtn">✅ Confirm Sale</button>
   </div>
 
   <script>
     const dateInput = document.getElementById("date");
     const codeInput = document.getElementById("code");
-    const nameInput = document.getElementById("productName");
-    const priceInput = document.getElementById("price");
+    const nameInput = document.getElementById("name");
     const qtyInput = document.getElementById("qty");
-    const buyStock = document.getElementById("buyStock");
-    const tableBody = document.getElementById("saleTable");
-    const totalEl = document.getElementById("total");
+    const priceInput = document.getElementById("price");
+    const infoSpan = document.getElementById("info");
+    const saleTable = document.getElementById("saleTable");
+    const totalSpan = document.getElementById("total");
     const paidInput = document.getElementById("paid");
-    const changeEl = document.getElementById("change");
-    const confirmSaleBtn = document.getElementById("confirmSale");
+    const changeSpan = document.getElementById("change");
 
-    let products = JSON.parse(localStorage.getItem("products") || "[]");
-    let saleItems = [];
-
-    // Auto set today's date
     dateInput.valueAsDate = new Date();
 
-    // Auto-fill product info by code
-    codeInput.addEventListener("change", () => {
-      const code = codeInput.value.trim();
-      const found = products.find(p => p.code === code);
-      if (found) {
-        nameInput.value = found.name;
-        buyStock.textContent = `Buying: ৳${found.buying} | Stock: ${found.qty}`;
+    let saleItems = [];
+    let products = JSON.parse(localStorage.getItem("products") || "[]");
+    let sales = JSON.parse(localStorage.getItem("sales") || "[]");
+
+    // Product auto-fill
+    codeInput.addEventListener("input", () => {
+      const p = products.find(pr => pr.code === codeInput.value.trim());
+      if (p) {
+        nameInput.value = p.name;
+        infoSpan.textContent = `Buying: ৳${p.buying} | Stock: ${p.qty}`;
       } else {
         nameInput.value = "";
-        buyStock.textContent = "❌ Stock not available";
+        infoSpan.textContent = "❌ Stock not available";
       }
     });
 
-    // Add to sale table (stock not reduced yet)
+    // Add product to sale table
     document.getElementById("addBtn").addEventListener("click", () => {
       const code = codeInput.value.trim();
-      const qty = parseInt(qtyInput.value);
+      const name = nameInput.value.trim();
       const price = parseFloat(priceInput.value);
+      const qty = parseInt(qtyInput.value);
       const date = dateInput.value;
-      const found = products.find(p => p.code === code);
 
-      if (!found) return alert("❌ Product not available!");
-      if (!price || price <= 0) return alert("❌ Please enter selling price!");
-      if (qty > found.qty) return alert("❌ Not enough stock!");
+      const p = products.find(pr => pr.code === code);
+
+      if (!p) return alert("❌ Product not found in stock!");
+      if (qty > p.qty) return alert("⚠️ Not enough stock!");
+      if (!price) return alert("⚠️ Please enter selling price!");
 
       const subtotal = price * qty;
-      saleItems.push({ date, code, name: found.name, qty, price, subtotal, buying: found.buying });
+
+      saleItems.push({ date, code, name, qty, price, subtotal });
       renderTable();
       codeInput.value = "";
       nameInput.value = "";
-      priceInput.value = "";
       qtyInput.value = 1;
-      buyStock.textContent = "";
+      priceInput.value = "";
+      infoSpan.textContent = "";
     });
 
-    // Render table
     function renderTable() {
-      tableBody.innerHTML = "";
+      saleTable.innerHTML = "";
       let total = 0;
       saleItems.forEach((item, i) => {
         total += item.subtotal;
@@ -199,11 +138,10 @@
           <td>${item.qty}</td>
           <td>${item.price}</td>
           <td>${item.subtotal}</td>
-          <td><button onclick="removeItem(${i})">❌</button></td>
-        `;
-        tableBody.appendChild(tr);
+          <td><button onclick="removeItem(${i})">❌</button></td>`;
+        saleTable.appendChild(tr);
       });
-      totalEl.textContent = total;
+      totalSpan.textContent = total;
     }
 
     window.removeItem = (i) => {
@@ -211,37 +149,34 @@
       renderTable();
     };
 
-    // Change calculation
+    // Paid & Change Calculation
     paidInput.addEventListener("input", () => {
+      const total = parseFloat(totalSpan.textContent) || 0;
       const paid = parseFloat(paidInput.value) || 0;
-      const total = parseFloat(totalEl.textContent);
-      changeEl.textContent = paid - total;
+      changeSpan.textContent = paid - total;
     });
 
-    // Confirm Sale (now stock will reduce)
-    confirmSaleBtn.addEventListener("click", () => {
-      if (saleItems.length === 0) return alert("No items added!");
-      const total = parseFloat(totalEl.textContent);
-      const paid = parseFloat(paidInput.value) || 0;
+    // Confirm Sale
+    document.getElementById("confirmBtn").addEventListener("click", () => {
+      if (saleItems.length === 0) return alert("⚠️ No product added!");
+      const total = parseFloat(totalSpan.textContent);
+      const paid = parseFloat(paidInput.value);
       const change = paid - total;
-      const method = document.getElementById("paymentMethod").value;
+      const method = document.getElementById("method").value;
 
-      // Invoice auto increase
-      let lastInvoice = parseInt(localStorage.getItem("lastInvoice") || "1000");
-      const invoice = ++lastInvoice;
-      localStorage.setItem("lastInvoice", invoice);
-
-      // Reduce stock
+      // Update stock
       saleItems.forEach(sale => {
-        const prod = products.find(p => p.code === sale.code);
-        if (prod) prod.qty -= sale.qty;
+        const p = products.find(pr => pr.code === sale.code);
+        if (p) p.qty -= sale.qty;
       });
       localStorage.setItem("products", JSON.stringify(products));
 
-      // Save sale history
-      const history = JSON.parse(localStorage.getItem("sales") || "[]");
-      history.push({
-        invoice,
+      // Generate Invoice Number
+      let inv = 1000 + (sales.length + 1);
+
+      // Save to sale history
+      sales.push({
+        invoice: inv,
         date: new Date().toLocaleString(),
         items: saleItems,
         total,
@@ -249,13 +184,17 @@
         change,
         method
       });
-      localStorage.setItem("sales", JSON.stringify(history));
+      localStorage.setItem("sales", JSON.stringify(sales));
 
-      alert(`✅ Sale Saved!\nInvoice: ${invoice}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`);
+      alert(
+        `✅ Sale Saved!\nInvoice: ${inv}\nTotal: ৳${total}\nPaid: ৳${paid}\nChange: ৳${change}`
+      );
+
       saleItems = [];
       renderTable();
+      totalSpan.textContent = 0;
       paidInput.value = "";
-      changeEl.textContent = "0";
+      changeSpan.textContent = 0;
     });
   </script>
 </body>
