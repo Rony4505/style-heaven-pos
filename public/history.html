@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sale History</title>
+  <title>Sale History - Style Heaven POS</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -16,6 +16,19 @@
       text-align: center;
       padding: 14px;
       font-weight: 600;
+      position: relative;
+    }
+    header button {
+      position: absolute;
+      left: 10px;
+      top: 8px;
+      background: #ff3b30;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 14px;
     }
     table {
       width: 100%;
@@ -31,7 +44,7 @@
       background: #007bff;
       color: white;
     }
-    button {
+    button.clear {
       background: #ff3b30;
       color: white;
       border: none;
@@ -43,7 +56,11 @@
   </style>
 </head>
 <body>
-  <header>📜 Sale History</header>
+  <header>
+    <button onclick="window.location.href='app.html'">← Back</button>
+    📜 Sale History
+  </header>
+
   <main style="padding:10px;">
     <table id="historyTable">
       <thead>
@@ -59,7 +76,7 @@
       </thead>
       <tbody></tbody>
     </table>
-    <button onclick="clearHistory()">🗑️ Clear All</button>
+    <button class="clear" onclick="clearHistory()">🗑️ Clear All</button>
   </main>
 
   <script>
